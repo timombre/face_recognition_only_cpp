@@ -282,9 +282,9 @@ int main( int argc, const char** argv )
     //nestedCascade.load( "/home/tmenais/opencv/data/haarcascades/haarcascade_eye_tree_eyeglasses.xml" ) ;
  
     // Change path before execution 
-    cascade.load("/home/tmenais/opencv/data/haarcascades/haarcascade_frontalface_default.xml") ; 
+    cascade.load("haarcascade_frontalface_default.xml") ; 
 
-    std::unique_ptr<tensorflow::Session> session = initSession("/home/tmenais/Face_Recognition/lib/src/ckpt/20180408-102900/20180408-102900.pb");
+    std::unique_ptr<tensorflow::Session> session = initSession("20180408-102900.pb");
 
  
     //Start Video..1) 0 for WebCam 2) "Path to Video" for a Local Video

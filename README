@@ -1,21 +1,25 @@
-# face_regognition_only_cpp
+#Face_regognition_only_cpp
 inspired by https://github.com/vinayakkailas/Face_Recognition in python
 (for aworking update, check my fork: https://github.com/timombre/Face_Recognition)
 
 Face recognition using Tensorflow C++ API and OpenCV
 
-# Requirements:
+#Requirements:
 	1. Tensorflow built from sources and .so libraries generated (bazel build //tensorflow:libtensorflow_cc.so)
 	2. OpenCV installed
 
 Works on Unix systems (Not tested on Mac though)
 
-# Using:
+#Using:
 In Makefile, modify TF_BUILDDIR ?= with your Tensorflow directory.
 
 make
 
 Download Tensorflow weightfile and OpenCV Haarcascade:
+
+wget https://github.com/arunmandal53/facematch/raw/master/20180408-102900/20180408-102900.pb
+
+wget https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
 
 
 
