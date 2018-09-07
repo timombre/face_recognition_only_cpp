@@ -1,3 +1,15 @@
+#
+face_recognition
+face_embeddings_database.txt
+
+
+# Tensorflow Models
+*.pb
+
+#OpenCV haarcascades
+*.xml
+
+
 # Prerequisites
 *.d
 

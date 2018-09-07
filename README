@@ -1,0 +1,50 @@
+# face_regognition_only_cpp
+inspired by https://github.com/vinayakkailas/Face_Recognition in python
+(for aworking update, check my fork: https://github.com/timombre/Face_Recognition)
+
+Face recognition using Tensorflow C++ API and OpenCV
+
+# Requirements:
+	1. Tensorflow built from sources and .so libraries generated (bazel build //tensorflow:libtensorflow_cc.so)
+	2. OpenCV installed
+
+Works on Unix systems (Not tested on Mac though)
+
+# Using:
+In Makefile, modify TF_BUILDDIR ?= with your Tensorflow directory.
+
+make
+
+Download Tensorflow weightfile and OpenCV Haarcascade:
+
+
+
+Create a dataset of faces for each person and arrange them in below order
+```
+root folder  
+│
+└───Person 1
+│   │───IMG1
+│   │───IMG2
+│   │   ....
+└───Person 2
+|   │───IMG1
+|   │───IMG2
+|   |   ....
+```
+
+cd prepdatabase
+
+./prepdatabase.sh PATH_TO_YOUR_DATA_DIRECTORY
+
+cd ..
+
+./face_recognition face_embeddings_database.txt
+
+
+#WIP
+
+-The accuracy is very low, needs alignement implementation (in progress)
+
+
+
