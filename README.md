@@ -5,10 +5,29 @@ Inspired by https://github.com/vinayakkailas/Face_Recognition in python
 
 Face recognition using Tensorflow C++ API and OpenCV
 
-#Requirements:
+## Requirements:
 
-	1. Tensorflow built from sources and .so libraries generated (bazel build //tensorflow:libtensorflow_cc.so)
-	2. OpenCV installed
+	1. Tensorflow built from sources :
+	Follow official guidelines
+	https://www.tensorflow.org/install/install_sources
+	
+	Generate shared library: (bazel build //tensorflow:libtensorflow_cc.so)
+	
+	2. OpenCV and contribs installed:
+	
+	git clone https://github.com/opencv/opencv.git
+	cd opencv 
+	git checkout 3.3.1 
+	git clone https://github.com/opencv/opencv_contrib.git
+	cd opencv_contrib
+	git checkout 3.3.1
+	cd ..
+	mkdir build
+	cd build
+	cmake -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules ..
+	make
+	sudo make install
+	
 
 Works on Unix systems (Not tested on Mac though)
 
