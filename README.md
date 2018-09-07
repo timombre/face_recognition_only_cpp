@@ -26,13 +26,15 @@ wget https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/ha
 
 
 
-## Create a dataset of faces for each person and arrange them in below order
+## Create a dataset of faces for each person 
 
 sudo apt install ffmpeg 
 
 ffmpeg -i /dev/video0 /PATH-FOR-VID/LABEL.mkv #modify dev/video0 if needed and choose your path
 
 ffmpeg -i /PATH-FOR-VID/LABEL.mkv -vf fps=2 /PATH-FOR-IMAGES/LABEL_%04d.jpg -hide_banner
+
+Arrangeyour dataset in below order
 
 ```
 root folder  
