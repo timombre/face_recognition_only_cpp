@@ -34,7 +34,7 @@ ffmpeg -i /dev/video0 /PATH-FOR-VID/LABEL.mkv #modify dev/video0 if needed and c
 
 ffmpeg -i /PATH-FOR-VID/LABEL.mkv -vf fps=2 /PATH-FOR-IMAGES/LABEL_%04d.jpg -hide_banner
 
-Arrangeyour dataset in below order
+Arrange your dataset in below order
 
 ```
 root folder  
