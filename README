@@ -1,4 +1,4 @@
-#Face_regognition_only_cpp
+# **Face_regognition_only_cpp**
 
 Inspired by https://github.com/vinayakkailas/Face_Recognition in python
 (for aworking update, check my fork: https://github.com/timombre/Face_Recognition)
@@ -12,7 +12,7 @@ Face recognition using Tensorflow C++ API and OpenCV
 
 Works on Unix systems (Not tested on Mac though)
 
-#Using:
+# **Using:**
 
 In Makefile, modify TF_BUILDDIR ?= with your Tensorflow directory.
 
@@ -50,7 +50,7 @@ cd ..
 ./face_recognition face_embeddings_database.txt
 
 
-#WIP
+# **WIP**
 
 -The accuracy is very low, needs alignement implementation (in progress)
 
