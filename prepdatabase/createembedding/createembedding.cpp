@@ -17,9 +17,9 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  */
-#include "/usr/local/include/opencv2/objdetect.hpp"
-#include "/usr/local/include/opencv2/highgui.hpp"
-#include "/usr/local/include/opencv2/imgproc.hpp"
+#include <opencv2/objdetect.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
 #include <iostream>
 #include <fstream>
 
