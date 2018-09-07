@@ -1,5 +1,5 @@
 #Face_regognition_only_cpp
-inspired by https://github.com/vinayakkailas/Face_Recognition in python
+Inspired by https://github.com/vinayakkailas/Face_Recognition in python
 (for aworking update, check my fork: https://github.com/timombre/Face_Recognition)
 
 Face recognition using Tensorflow C++ API and OpenCV
