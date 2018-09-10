@@ -9,6 +9,9 @@ face_embeddings_database.txt
 #OpenCV haarcascades
 *.xml
 
+#Landmark
+*.yaml
+
 
 # Prerequisites
 *.d
