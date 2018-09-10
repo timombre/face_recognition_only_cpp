@@ -51,12 +51,13 @@ In Makefile, modify TF_BUILDDIR ?= with your Tensorflow directory.
 
 make
 
-Download Tensorflow weightfile and OpenCV Haarcascade:
+Download Tensorflow weightfile, Landmarks and OpenCV Haarcascade:
 
 wget https://github.com/arunmandal53/facematch/raw/master/20180408-102900/20180408-102900.pb
 
-wget https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_default.xml
+wget https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt2.xml
 
+wget https://raw.githubusercontent.com/kurnianggoro/GSOC2017/master/data/lbfmodel.yaml
 
 
 ## Create a dataset of faces for each person 
@@ -93,7 +94,7 @@ cd ..
 
 ## WIP
 
--The accuracy is very low, needs alignement implementation (in progress)
+-The accuracy is still low, needs better alignment implementation (in progress)
 
 
 
