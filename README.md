@@ -64,9 +64,7 @@ Download Tensorflow weightfile (The accuracy is better with older 20170512-11054
     ffmpeg -i /dev/video0 /PATH-FOR-VID/LABEL.mkv #modify dev/video0 if needed and choose your path
     ffmpeg -i /PATH-FOR-VID/LABEL.mkv -vf fps=2 /PATH-FOR-IMAGES/LABEL_%04d.jpg -hide_banner
 
-Arrange your dataset in below order
-
-
+Arrange your dataset in below order :
 
 
 ```
@@ -81,14 +79,13 @@ root folder
 |   │───IMG2
 |   |   ....
 ```
+## Create embeddings data base and run code :
 
     cd prepdatabase
     ./prepdatabase.sh PATH_TO_YOUR_DATA_DIRECTORY 
     # you can add the -gen_aligned_db flag to generate the intermediary aligned database
     cd ..
     ./face_recognition face_embeddings_database.txt
-
-
 
 
 ## WIP :

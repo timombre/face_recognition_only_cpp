@@ -301,7 +301,6 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 
 
         for (int i = 0; i < label_database.size(); ++i){
-
             float diff=0;
 
             std::vector<float> vect = ConvStringToFloats(embeddings_database[i]);
@@ -310,15 +309,12 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
             for (int j = 0; j < outputs[0].shape().dim_size(1); ++j){
                 diff += (output_c(0,j) - vect[j]) * (output_c(0,j) - vect[j]) ;
             }
-
-            diff= diff; //no need to sqrt
-
+            //diff= diff; //no need to sqrt
             if (diff < min_emb_diff)
             {
                 min_emb_diff = diff ;
                 posofmin = i ;
-            }
-                
+            }                
         }
 
         cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
