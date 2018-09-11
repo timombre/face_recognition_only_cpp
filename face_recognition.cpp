@@ -202,10 +202,10 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     resize( Cropped_Face, Cropped_Face, cv::Size(160, 160), CV_INTER_LINEAR);
 
     
-    std::string text = "Cropped Face ";
-    text += std::to_string(i);
+    //std::string text = "Cropped Face ";
+    //text += std::to_string(i);
 
-    imshow(text,Cropped_Face);
+    //imshow(text,Cropped_Face);
     return Cropped_Face ;
 }
 
@@ -320,7 +320,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
         cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
 
-        if(min_emb_diff < 0.07) {
+        if(min_emb_diff < 0.045) {
             cout <<"Hello " << label_database[posofmin] << " confidence: " << min_emb_diff << endl;
             if ( cvRound(r.y*scale -12 * linewidth) > 0 )
             {
