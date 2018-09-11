@@ -54,10 +54,6 @@ using namespace cv;
 using namespace tensorflow;
 using namespace cv::face;
 
-string input_layer = "input";
-string phase_train_layer = "phase_train";
-string output_layer = "embeddings";
-
 
 
 static tensorflow::Status ReadEntireFile(tensorflow::Env* env, const std::string& filename,
@@ -144,7 +140,6 @@ std::vector<float> ConvStringToFloats(std::string str){
 
 cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int i){
 
-
     //description of the landmarks in case someone wants to do something custom
     // landmarks 0, 16           // Jaw line
     // landmarks 17, 21          // Left eyebrow
@@ -160,8 +155,8 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     // 2D image points. If you change the image, you need to change vector
     std::vector<cv::Point2d> image_points;
     image_points.push_back(landmarks[30]);    // Nose tip
-    image_points.push_back(landmarks[8]);    // Chin
-    image_points.push_back(landmarks[45]);     // Left eye left corner
+    image_points.push_back(landmarks[8]);     // Chin
+    image_points.push_back(landmarks[45]);    // Left eye left corner
     image_points.push_back(landmarks[36]);    // Right eye right corner
     image_points.push_back(landmarks[54]);    // Left Mouth corner
     image_points.push_back(landmarks[48]);    // Right mouth corner
@@ -173,7 +168,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     model_points.push_back(cv::Point3d(-225.0f, 170.0f, -135.0f));       // Left eye left corner
     model_points.push_back(cv::Point3d(225.0f, 170.0f, -135.0f));        // Right eye right corner
     model_points.push_back(cv::Point3d(-150.0f, -150.0f, -125.0f));      // Left Mouth corner
-    model_points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f)); // Right mouth corner
+    model_points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f));       // Right mouth corner
 
     // Camera internals
     double focal_length = im.cols; // Approximate focal length. //3 nb channels
@@ -192,8 +187,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     double theta_deg = rot/M_PI*180;
     Mat dst;
 
-    // Rotate around the center
-    
+    // Rotate around the center    
     Point2f pt = landmarks[30]; //center is nose tip
     Mat r = getRotationMatrix2D(pt, theta_deg, 1.0);
     // determine bounding rectangle
@@ -231,9 +225,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
     cascade.detectMultiScale( smallImg, faces, 1.1, 
                             7, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
 
-    tensorflow::Tensor phase_tensor(tensorflow::DT_BOOL, tensorflow::TensorShape());
-    phase_tensor.scalar<bool>()() = false;
-
+    
     int linewidth = std::max(1, int(img.rows * .005));
 
     vector<vector<Point2f>> landmarks;
@@ -251,20 +243,17 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                 cvPoint(cvRound((r.x + r.width-1)*scale), 
                 cvRound((r.y + r.height-1)*scale)), color, linewidth, 8, 0);
 
-        Mat smallImgROI ; // = smallImg(r);
-        //cv::resize(smallImgROI, smallImgROI, cv::Size(160, 160), CV_INTER_LINEAR);//network needs pictures of size 160X160 pixels
+        Mat smallImgROI ;
 
         if(success)
         {
-        // If successful, render the landmarks on the face
+        // If success, align face
             if (landmarks[i].size()==68)
             {
                  smallImgROI = faceCenterRotateCrop(smallImg,landmarks[i],faces[i],i);
             }
 
         }
-
-        //resize( smallImgROI, smallImgROI, cv::Size(160, 160), CV_INTER_LINEAR); // model needs image 160*160 pix
 
         if(! smallImgROI.data )                // Check for invalid input
         {
@@ -286,6 +275,14 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
             }
         }
 
+        //Tensor Flow graph specifics :
+        string input_layer = "input";
+        string phase_train_layer = "phase_train";
+        string output_layer = "embeddings";
+        tensorflow::Tensor phase_tensor(tensorflow::DT_BOOL, tensorflow::TensorShape());
+        phase_tensor.scalar<bool>()() = false;
+
+        //Run session
         std::vector<Tensor> outputs ;
         Status run_status = session->get()->Run({{input_layer, input_tensor},
                                        {phase_train_layer, phase_tensor}}, 
@@ -307,7 +304,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 
             float diff=0;
 
-            auto vect = ConvStringToFloats(embeddings_database[i]);
+            std::vector<float> vect = ConvStringToFloats(embeddings_database[i]);
 
 
             for (int j = 0; j < outputs[0].shape().dim_size(1); ++j){
@@ -327,7 +324,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
         cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
 
-        if(min_emb_diff < 0.05) {
+        if(min_emb_diff < 0.07) {
             cout <<"Hello " << label_database[posofmin] << " confidence: " << min_emb_diff << endl;
             if ( cvRound(r.y*scale -12 * linewidth) > 0 )
             {
@@ -373,32 +370,19 @@ int main( int argc, const char** argv )
             std::string mystring = database[i];
             label_database[i] = mystring.substr(0, mystring.find_first_of(" "));
             embeddings_database[i] = mystring.substr(mystring.find_first_of(" ")+1);
-            //std::cout << embeddings_database[i]  << '\n';
-            //embeddings_float[i]=ConvStringToFloats(embeddings_database[i]);
-            //std::cout <<label_database[i] << " " << embeddings_database[i]  << '\n';
-    }
 
-    
+    } 
 
-
-
-    
     // VideoCapture class for playing video for which faces to be detected
     VideoCapture capture; 
     Mat frame;
- 
-    // PreDefined trained XML classifiers with facial features
-    CascadeClassifier cascade; //, nestedCascade; 
-    double scale=1;
- 
-    // Load classifiers from "opencv/data/haarcascades" directory 
-    //nestedCascade.load( "/home/tmenais/opencv/data/haarcascades/haarcascade_eye_tree_eyeglasses.xml" ) ;
-
-
+  
+    // Load everything needed    
     Ptr<Facemark> facemark = FacemarkLBF::create();
     facemark->loadModel("lbfmodel.yaml");
- 
-    // Change path before execution 
+
+    CascadeClassifier cascade;
+    double scale=1; 
     cascade.load("haarcascade_frontalface_alt2.xml") ; 
 
     std::unique_ptr<tensorflow::Session> session = initSession("20170512-110547.pb");
@@ -417,13 +401,12 @@ int main( int argc, const char** argv )
                 break;
             Mat frame1 = frame.clone();
             detectAndDraw(frame1, cascade,
-                          // nestedCascade,
                            facemark,
                            scale,
                            &session,
                            label_database,
                            embeddings_database
-                           ); //detectAndDraw( frame1, cascade, nestedCascade, scale );
+                           );
             char c = (char)waitKey(10);
          
             // Press q to exit from window

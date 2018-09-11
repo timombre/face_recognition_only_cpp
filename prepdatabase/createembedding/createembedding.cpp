@@ -51,8 +51,6 @@
 #include "tensorflow/core/util/command_line_flags.h"
 
 #include <experimental/filesystem>
-
-//using std::experimental::filesystem::recursive_directory_iterator;
  
 
 using namespace tensorflow;
@@ -61,9 +59,6 @@ using namespace std;
 using namespace cv;
 using namespace cv::face;
 
-string input_layer = "input";
-string phase_train_layer = "phase_train";
-string output_layer = "embeddings";
 
 
 
@@ -150,8 +145,8 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int
     // 2D image points. If you change the image, you need to change vector
     std::vector<cv::Point2d> image_points;
     image_points.push_back(landmarks[30]);    // Nose tip
-    image_points.push_back(landmarks[8]);    // Chin
-    image_points.push_back(landmarks[45]);     // Left eye left corner
+    image_points.push_back(landmarks[8]);     // Chin
+    image_points.push_back(landmarks[45]);    // Left eye left corner
     image_points.push_back(landmarks[36]);    // Right eye right corner
     image_points.push_back(landmarks[54]);    // Left Mouth corner
     image_points.push_back(landmarks[48]);    // Right mouth corner
@@ -163,7 +158,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int
     model_points.push_back(cv::Point3d(-225.0f, 170.0f, -135.0f));       // Left eye left corner
     model_points.push_back(cv::Point3d(225.0f, 170.0f, -135.0f));        // Right eye right corner
     model_points.push_back(cv::Point3d(-150.0f, -150.0f, -125.0f));      // Left Mouth corner
-    model_points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f)); // Right mouth corner
+    model_points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f));       // Right mouth corner
 
     // Camera internals
     double focal_length = im.cols; // Approximate focal length. //3 nb channels
@@ -182,8 +177,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int
     double theta_deg = rot/M_PI*180;
     Mat dst;
 
-    // Rotate around the center
-    
+    // Rotate around the center    
     Point2f pt = landmarks[30]; //center is nose tip
     Mat r = getRotationMatrix2D(pt, theta_deg, 1.0);
     // determine bounding rectangle
@@ -198,10 +192,6 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int
     resize( Cropped_Face, Cropped_Face, cv::Size(160, 160), CV_INTER_LINEAR);
 
     return Cropped_Face ;
-    //std::string text = "Cropped Face ";
-    //text += std::to_string(i);
-
-    //imshow(text,Cropped_Face);
 }
 
 
@@ -250,16 +240,16 @@ int main( int argc, char** argv )
     }
 
 
-    std::unique_ptr<tensorflow::Session> session = initSession("../20170512-110547.pb");
-
-    tensorflow::Tensor phase_tensor(tensorflow::DT_BOOL, tensorflow::TensorShape());
-    phase_tensor.scalar<bool>()() = false;
-
+   
     CascadeClassifier cascade;
+
+    // Load everything needed
     cascade.load("../haarcascade_frontalface_alt2.xml");
 
     Ptr<Facemark> facemark = FacemarkLBF::create();
     facemark->loadModel("../lbfmodel.yaml");
+
+    std::unique_ptr<tensorflow::Session> session = initSession("../20170512-110547.pb");
 
     ofstream myfile;
     myfile.open ("../face_embeddings_database.txt");
@@ -271,8 +261,7 @@ int main( int argc, char** argv )
             file_database[i] = mystring.substr(mystring.find_first_of(" ")+1);
 
 
-            //write string with correct path
-            
+            //write string with correct path            
             std::string imtoread = string(argv[1]);
 
             imtoread.append("/"); imtoread.append(label_database[i]); imtoread.append("/"); imtoread.append(file_database[i]);
@@ -298,7 +287,6 @@ int main( int argc, char** argv )
             cascade.detectMultiScale( smallImg, faces, 1.1, 
                                     7, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
 
-            //std::cout << "after cascade"  << '\n';
 
             if (faces.size() !=1)
             {
@@ -314,13 +302,9 @@ int main( int argc, char** argv )
 
                 Rect r = faces[0];
 
-                //Mat smallImgROI = smallImg(r);
-
                 Mat detectlandmarks;
 
                 vector<vector<Point2f>> landmarks;
-
-                //cvtColor(image, detectlandmarks, COLOR_BGR2GRAY);
                 
                 // Run landmark detector
                 bool success = facemark->fit(smallImg,faces,landmarks);
@@ -329,7 +313,7 @@ int main( int argc, char** argv )
 
                 if(success)
                 {
-                // If successful, render the landmarks on the face
+                // If success, align face
                     for(int i = 0; i < landmarks.size(); i++)
                     {
                         if (landmarks[i].size()==68)
@@ -339,8 +323,6 @@ int main( int argc, char** argv )
 
                     }
                 }
-
-                //resize( smallImgROI, smallImgROI, cv::Size(160, 160), CV_INTER_LINEAR); // model needs image 160*160 pix
 
                 if(! smallImgROI.data )                // Check for invalid input
                 {
@@ -365,6 +347,14 @@ int main( int argc, char** argv )
                     }
                 }
 
+                //Tensor Flow graph specifics :
+                string input_layer = "input";
+                string phase_train_layer = "phase_train";
+                string output_layer = "embeddings";
+                tensorflow::Tensor phase_tensor(tensorflow::DT_BOOL, tensorflow::TensorShape());
+                phase_tensor.scalar<bool>()() = false;
+
+                //Run session
                 std::vector<Tensor> outputs ;
                 Status run_status = session->Run({{input_layer, input_tensor},
                                                {phase_train_layer, phase_tensor}}, 
