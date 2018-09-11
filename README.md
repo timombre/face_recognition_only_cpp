@@ -53,7 +53,9 @@ make
 
 Download Tensorflow weightfile, Landmarks and OpenCV Haarcascade:
 
-wget https://github.com/arunmandal53/facematch/raw/master/20180408-102900/20180408-102900.pb
+wget https://gitlab.fit.cvut.cz/pitakma1/mvi-sp/raw/eb9c9db755077bd6fe0a61c1bbb1cced5f20d6d1/data/20170512-110547/20170512-110547.pb
+
+(The accuracy is better with older 20170512-110547.pb than with 20180408-102900.pb)
 
 wget https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt2.xml
 
@@ -94,7 +96,7 @@ cd ..
 
 ## WIP
 
--The accuracy is still low, needs better alignment implementation (in progress)
+-Average the result on several consecutive frames
 
 
 
