@@ -49,28 +49,25 @@ Works on Unix systems (Not tested on Mac though)
 
 In Makefile, modify TF_BUILDDIR ?= with your Tensorflow directory.
 
-make
+    make
 
-Download Tensorflow weightfile, Landmarks and OpenCV Haarcascade:
+Download Tensorflow weightfile (The accuracy is better with older 20170512-110547.pb than with 20180408-102900.pb), Landmarks and OpenCV Haarcascade:
 
-wget https://gitlab.fit.cvut.cz/pitakma1/mvi-sp/raw/eb9c9db755077bd6fe0a61c1bbb1cced5f20d6d1/data/20170512-110547/20170512-110547.pb
-
-(The accuracy is better with older 20170512-110547.pb than with 20180408-102900.pb)
-
-wget https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt2.xml
-
-wget https://raw.githubusercontent.com/kurnianggoro/GSOC2017/master/data/lbfmodel.yaml
+    wget https://gitlab.fit.cvut.cz/pitakma1/mvi-sp/raw/eb9c9db755077bd6fe0a61c1bbb1cced5f20d6d1/data/20170512-110547/20170512-110547.pb
+    wget https://raw.githubusercontent.com/opencv/opencv/master/data/haarcascades/haarcascade_frontalface_alt2.xml
+    wget https://raw.githubusercontent.com/kurnianggoro/GSOC2017/master/data/lbfmodel.yaml
 
 
 ## Create a dataset of faces for each person 
 
-sudo apt install ffmpeg 
-
-ffmpeg -i /dev/video0 /PATH-FOR-VID/LABEL.mkv #modify dev/video0 if needed and choose your path
-
-ffmpeg -i /PATH-FOR-VID/LABEL.mkv -vf fps=2 /PATH-FOR-IMAGES/LABEL_%04d.jpg -hide_banner
+    sudo apt install ffmpeg
+    ffmpeg -i /dev/video0 /PATH-FOR-VID/LABEL.mkv #modify dev/video0 if needed and choose your path
+    ffmpeg -i /PATH-FOR-VID/LABEL.mkv -vf fps=2 /PATH-FOR-IMAGES/LABEL_%04d.jpg -hide_banner
 
 Arrange your dataset in below order
+
+
+
 
 ```
 root folder  
@@ -85,13 +82,16 @@ root folder
 |   |   ....
 ```
 
-cd prepdatabase
+    cd prepdatabase
 
-./prepdatabase.sh PATH_TO_YOUR_DATA_DIRECTORY
+    ./prepdatabase.sh PATH_TO_YOUR_DATA_DIRECTORY 
+    # you can add the -gen_aligned_db flag to generate the intermediary aligned database
 
-cd ..
+    cd ..
 
-./face_recognition face_embeddings_database.txt
+    ./face_recognition face_embeddings_database.txt
+
+
 
 
 ## WIP

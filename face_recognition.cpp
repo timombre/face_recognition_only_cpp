@@ -327,7 +327,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
         cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
 
-        if(min_emb_diff < 0.04) {
+        if(min_emb_diff < 0.05) {
             cout <<"Hello " << label_database[posofmin] << " confidence: " << min_emb_diff << endl;
             if ( cvRound(r.y*scale -12 * linewidth) > 0 )
             {

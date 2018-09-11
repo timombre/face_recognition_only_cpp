@@ -210,7 +210,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int
 
 int main( int argc, char** argv )
 {
-    if( argc != 3)
+    if( argc < 3)
     {
      cout <<" Usage: give a folder and label file" << endl;
      return -1;
@@ -218,28 +218,35 @@ int main( int argc, char** argv )
     std::vector<std::string> database = ReadLabelsAndFile(argv[2]);
     std::vector<std::string> label_database  = ReadLabelsAndFile(argv[2]); // segfault if not initialized
     std::vector<std::string> file_database = ReadLabelsAndFile(argv[2]); // segfault if not initialized
+    bool gen_dt = strcmp( argv[3], "-gen_aligned_db");
 
-    //if [ ! -d ../data/../plop ]; then mkdir ../plop ; fi ;
-
-    string folder = "/../aligned_data_base";
-
-    stringstream call_line;
-
-    call_line << "if [ ! -d " << argv[1] << folder << " ]; then mkdir " << argv[1] << folder << " ; fi ;";
-    //call_line << "if [ ! -d " << argv[1] << folder << " ]; then echo plop ; fi ;";
-
-    system(call_line.str().c_str());
+        std::cout << gen_dt  << '\n';
 
 
-  
-    for (int i = 0; i < label_database.size(); ++i)
+
+    if (gen_dt == 0)
     {
-        stringstream second_call_line;
-        //second_call_line << "if [ ! -d " << argv[1] << folder  << " ]; then echo plop ; fi ;";
-        second_call_line << "if [ ! -d " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ]; then mkdir " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ; fi ;";
+        string folder = "/../aligned_data_base";
+
+        stringstream call_line;
+
+        call_line << "if [ ! -d " << argv[1] << folder << " ]; then mkdir " << argv[1] << folder << " ; fi ;";
+        //call_line << "if [ ! -d " << argv[1] << folder << " ]; then echo plop ; fi ;";
+
+        system(call_line.str().c_str());
 
 
-        system(second_call_line.str().c_str());
+      
+        for (int i = 0; i < label_database.size(); ++i)
+        {
+            stringstream second_call_line;
+            //second_call_line << "if [ ! -d " << argv[1] << folder  << " ]; then echo plop ; fi ;";
+            second_call_line << "if [ ! -d " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ]; then mkdir " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ; fi ;";
+
+
+            system(second_call_line.str().c_str());
+        }
+
     }
 
 
