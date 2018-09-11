@@ -5,7 +5,7 @@ Inspired by https://github.com/vinayakkailas/Face_Recognition in python
 
 Face recognition using Tensorflow C++ API and OpenCV
 
-## Requirements:
+## Requirements :
 
 	1. Tensorflow built from sources :
 	Follow official guidelines
@@ -45,7 +45,7 @@ Face recognition using Tensorflow C++ API and OpenCV
 
 Works on Unix systems (Not tested on Mac though)
 
-## Using:
+## Using :
 
 In Makefile, modify TF_BUILDDIR ?= with your Tensorflow directory.
 
@@ -58,7 +58,7 @@ Download Tensorflow weightfile (The accuracy is better with older 20170512-11054
     wget https://raw.githubusercontent.com/kurnianggoro/GSOC2017/master/data/lbfmodel.yaml
 
 
-## Create a dataset of faces for each person 
+## Create a dataset of faces for each person :
 
     sudo apt install ffmpeg
     ffmpeg -i /dev/video0 /PATH-FOR-VID/LABEL.mkv #modify dev/video0 if needed and choose your path
@@ -83,20 +83,14 @@ root folder
 ```
 
     cd prepdatabase
-
     ./prepdatabase.sh PATH_TO_YOUR_DATA_DIRECTORY 
     # you can add the -gen_aligned_db flag to generate the intermediary aligned database
-
     cd ..
-
     ./face_recognition face_embeddings_database.txt
 
 
 
 
-## WIP
+## WIP :
 
 -Average the result on several consecutive frames
-
-
-
