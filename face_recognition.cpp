@@ -176,7 +176,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     model_points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f)); // Right mouth corner
 
     // Camera internals
-    double focal_length = im.cols/3; // Approximate focal length. //3 nb channels
+    double focal_length = im.cols; // Approximate focal length. //3 nb channels
     Point2d center = cv::Point2d(im.cols/2,im.rows/2);
     cv::Mat camera_matrix = (cv::Mat_<double>(3,3) << focal_length, 0, center.x, 0 , focal_length, center.y, 0, 0, 1);
     cv::Mat dist_coeffs = cv::Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
@@ -327,7 +327,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
         cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
 
-        if(min_emb_diff < 0.0015) {
+        if(min_emb_diff < 0.04) {
             cout <<"Hello " << label_database[posofmin] << " confidence: " << min_emb_diff << endl;
             if ( cvRound(r.y*scale -12 * linewidth) > 0 )
             {
@@ -401,7 +401,7 @@ int main( int argc, const char** argv )
     // Change path before execution 
     cascade.load("haarcascade_frontalface_alt2.xml") ; 
 
-    std::unique_ptr<tensorflow::Session> session = initSession("20180408-102900.pb");
+    std::unique_ptr<tensorflow::Session> session = initSession("20170512-110547.pb");
 
  
     //Start Video..1) 0 for WebCam 2) "Path to Video" for a Local Video

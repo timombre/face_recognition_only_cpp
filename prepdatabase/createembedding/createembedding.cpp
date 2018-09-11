@@ -166,7 +166,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int
     model_points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f)); // Right mouth corner
 
     // Camera internals
-    double focal_length = im.cols/3; // Approximate focal length. //3 nb channels
+    double focal_length = im.cols; // Approximate focal length. //3 nb channels
     Point2d center = cv::Point2d(im.cols/2,im.rows/2);
     cv::Mat camera_matrix = (cv::Mat_<double>(3,3) << focal_length, 0, center.x, 0 , focal_length, center.y, 0, 0, 1);
     cv::Mat dist_coeffs = cv::Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
@@ -243,7 +243,7 @@ int main( int argc, char** argv )
     }
 
 
-    std::unique_ptr<tensorflow::Session> session = initSession("../20180408-102900.pb");
+    std::unique_ptr<tensorflow::Session> session = initSession("../20170512-110547.pb");
 
     tensorflow::Tensor phase_tensor(tensorflow::DT_BOOL, tensorflow::TensorShape());
     phase_tensor.scalar<bool>()() = false;
