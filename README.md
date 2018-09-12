@@ -64,7 +64,7 @@ Download Tensorflow weightfile (The accuracy is better with older 20170512-11054
     ffmpeg -i /dev/video0 /PATH-FOR-VID/LABEL.mkv #modify dev/video0 if needed and choose your path
     ffmpeg -i /PATH-FOR-VID/LABEL.mkv -vf fps=2 /PATH-FOR-IMAGES/LABEL_%04d.jpg -hide_banner
     
-Note : This is just for code testing, it is a very bad way to create a data set as all pictures will have the same back ground and global features. If you already have independant pictures use them.
+Note : This is just for code testing, it is a very bad way to create a dataset as all pictures will have the same background and global features. If you already have independant pictures use them.
 
 Arrange your dataset in below order :
 
@@ -92,5 +92,7 @@ root folder
 
 
 ## WIP :
+
+-Average the result on predictions meeting minimal distance requirements
 
 -Average the result on several consecutive frames
