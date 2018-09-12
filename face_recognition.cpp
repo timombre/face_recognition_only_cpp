@@ -138,7 +138,7 @@ std::vector<float> ConvStringToFloats(std::string str){
     return vect;
 }
 
-cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int i){
+cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int i, bool show_crop){
 
     //description of the landmarks in case someone wants to do something custom
     // landmarks 0, 16           // Jaw line
@@ -202,10 +202,14 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     resize( Cropped_Face, Cropped_Face, cv::Size(160, 160), CV_INTER_LINEAR);
 
     
-    //std::string text = "Cropped Face ";
-    //text += std::to_string(i);
 
-    //imshow(text,Cropped_Face);
+    if (show_crop == true)
+    {            
+        std::string text = "Cropped Face ";
+        text += std::to_string(i);
+        imshow(text,Cropped_Face);
+    }
+
     return Cropped_Face ;
 }
 
@@ -215,7 +219,8 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     Ptr<Facemark> facemark,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
                     std::vector<std::string> label_database,
-                    std::vector<std::string> embeddings_database)
+                    std::vector<std::string> embeddings_database,
+                    bool show_crop)
 {
     vector<Rect> faces;
     Mat smallImg;
@@ -250,7 +255,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         // If success, align face
             if (landmarks[i].size()==68)
             {
-                 smallImgROI = faceCenterRotateCrop(smallImg,landmarks[i],faces[i],i);
+                 smallImgROI = faceCenterRotateCrop(smallImg,landmarks[i],faces[i],i,show_crop);
             }
 
         }
@@ -348,10 +353,26 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 int main( int argc, const char** argv )
 {
 
-    if( argc != 2)
+    if( argc < 2)
     {
         cout <<" Provide your embeddings database" << endl;
         return -1;
+    }
+
+    bool show_crop = false;
+
+    if (argc > 2)
+    {
+        
+        for (int i = 0; i < argc; ++i)
+        {
+           
+           if (strcmp( argv[i], "-show_crop") == 0)
+           {
+               show_crop = true ;
+           }
+
+        }
     }
 
     std::vector<std::string> database = ReadLabelsAndEmbeddings(argv[1]);
@@ -379,7 +400,7 @@ int main( int argc, const char** argv )
 
     CascadeClassifier cascade;
     double scale=1; 
-    cascade.load("haarcascade_frontalface_alt2.xml") ; 
+    cascade.load("haarcascade_frontalface_alt.xml") ; 
 
     std::unique_ptr<tensorflow::Session> session = initSession("20170512-110547.pb");
 
@@ -401,7 +422,8 @@ int main( int argc, const char** argv )
                            scale,
                            &session,
                            label_database,
-                           embeddings_database
+                           embeddings_database,
+                           show_crop
                            );
             char c = (char)waitKey(10);
          

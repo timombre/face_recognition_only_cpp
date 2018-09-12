@@ -88,6 +88,7 @@ root folder
     # you can add the -gen_aligned_db flag to generate the intermediary aligned database
     cd ..
     ./face_recognition face_embeddings_database.txt
+    # you can add the -show_crop flag if you want to display the analyzed sub pictures
 
 
 ## WIP :

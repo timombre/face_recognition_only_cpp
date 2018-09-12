@@ -127,7 +127,7 @@ std::vector<std::string> ReadLabelsAndFile(const std::string file_name) {
     return labels_files;
 }
 
-cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int i){
+cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int i , bool show_crop){
 
 
     //description of the landmarks in case someone wants to do something custom
@@ -191,6 +191,12 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int
 
     resize( Cropped_Face, Cropped_Face, cv::Size(160, 160), CV_INTER_LINEAR);
 
+    if (show_crop)
+    {            
+    std::string text = "Cropped Face ";
+    imshow(text,Cropped_Face);
+    }
+
     return Cropped_Face ;
 }
 
@@ -208,13 +214,20 @@ int main( int argc, char** argv )
     std::vector<std::string> database = ReadLabelsAndFile(argv[2]);
     std::vector<std::string> label_database  = ReadLabelsAndFile(argv[2]); // segfault if not initialized
     std::vector<std::string> file_database = ReadLabelsAndFile(argv[2]); // segfault if not initialized
-    bool gen_dt = strcmp( argv[3], "-gen_aligned_db");
 
-        std::cout << gen_dt  << '\n';
+    bool gen_dt = false;
+    bool show_crop = false;
+
+    for (int i = 0; i < argc; ++i)
+    {
+        if (strcmp( argv[i], "-gen_aligned_db") == 0)
+        {
+           gen_dt = true ;
+        }
+    }    
 
 
-
-    if (gen_dt == 0)
+    if (gen_dt)
     {
         string folder = "/../aligned_data_base";
 
@@ -232,8 +245,6 @@ int main( int argc, char** argv )
             stringstream second_call_line;
             //second_call_line << "if [ ! -d " << argv[1] << folder  << " ]; then echo plop ; fi ;";
             second_call_line << "if [ ! -d " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ]; then mkdir " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ; fi ;";
-
-
             system(second_call_line.str().c_str());
         }
 
@@ -244,7 +255,7 @@ int main( int argc, char** argv )
     CascadeClassifier cascade;
 
     // Load everything needed
-    cascade.load("../haarcascade_frontalface_alt2.xml");
+    cascade.load("../haarcascade_frontalface_alt.xml");
 
     Ptr<Facemark> facemark = FacemarkLBF::create();
     facemark->loadModel("../lbfmodel.yaml");
@@ -318,7 +329,7 @@ int main( int argc, char** argv )
                     {
                         if (landmarks[i].size()==68)
                         {
-                            smallImgROI = faceCenterRotateCrop(smallImg,landmarks[i],faces[i],i);
+                            smallImgROI = faceCenterRotateCrop(smallImg,landmarks[i],faces[i],i,show_crop);
                         }
 
                     }
