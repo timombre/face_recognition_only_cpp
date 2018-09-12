@@ -93,4 +93,5 @@ root folder
 ## WIP :
 
 -Average the result on predictions meeting minimal distance requirements
+
 -Average the result on several consecutive frames
