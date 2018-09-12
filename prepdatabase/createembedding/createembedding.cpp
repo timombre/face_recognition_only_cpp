@@ -255,7 +255,7 @@ int main( int argc, char** argv )
     CascadeClassifier cascade;
 
     // Load everything needed
-    cascade.load("../haarcascade_frontalface_alt.xml");
+    cascade.load("../haarcascade_frontalface_alt2.xml");
 
     Ptr<Facemark> facemark = FacemarkLBF::create();
     facemark->loadModel("../lbfmodel.yaml");

@@ -400,7 +400,7 @@ int main( int argc, const char** argv )
 
     CascadeClassifier cascade;
     double scale=1; 
-    cascade.load("haarcascade_frontalface_alt.xml") ; 
+    cascade.load("haarcascade_frontalface_alt2.xml") ; 
 
     std::unique_ptr<tensorflow::Session> session = initSession("20170512-110547.pb");
 
