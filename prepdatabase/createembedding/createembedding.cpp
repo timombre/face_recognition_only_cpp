@@ -243,7 +243,6 @@ int main( int argc, char** argv )
         for (int i = 0; i < label_database.size(); ++i)
         {
             stringstream second_call_line;
-            //second_call_line << "if [ ! -d " << argv[1] << folder  << " ]; then echo plop ; fi ;";
             second_call_line << "if [ ! -d " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ]; then mkdir " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ; fi ;";
             system(second_call_line.str().c_str());
         }
@@ -341,9 +340,12 @@ int main( int argc, char** argv )
                     return -1;
                 }
 
-                std::string aligned_data_base = string(argv[1]);
-                aligned_data_base.append("/../aligned_data_base/"); aligned_data_base.append(label_database[i]); aligned_data_base.append("/"); aligned_data_base.append(file_database[i]);
-                imwrite(aligned_data_base, smallImgROI);
+                if (gen_dt)
+                {
+                    std::string aligned_data_base = string(argv[1]);
+                    aligned_data_base.append("/../aligned_data_base/"); aligned_data_base.append(label_database[i]); aligned_data_base.append("/"); aligned_data_base.append(file_database[i]);
+                    imwrite(aligned_data_base, smallImgROI);
+                }
 
                 auto data = smallImgROI.data;
                 Tensor input_tensor(tensorflow::DT_FLOAT, tensorflow::TensorShape({1,smallImgROI.rows,smallImgROI.cols,3}));

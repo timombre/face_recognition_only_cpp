@@ -185,8 +185,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     // Access the last element in the Rotation Vector
     double rot = rotation_vector.at<double>(0,2);
     double theta_deg = rot/M_PI*180;
-    Mat dst;
-
+    
     // Rotate around the center    
     Point2f pt = landmarks[30]; //center is nose tip
     Mat r = getRotationMatrix2D(pt, theta_deg, 1.0);
@@ -194,6 +193,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     cv::Rect bbox = cv::RotatedRect(pt,im.size(), theta_deg).boundingRect();
 
     // Apply affine transform
+    Mat dst;
     warpAffine(im, dst, r, bbox.size());
 
     // Now crop the face
@@ -400,7 +400,7 @@ int main( int argc, const char** argv )
 
     CascadeClassifier cascade;
     double scale=1; 
-    cascade.load("haarcascade_frontalface_alt2.xml") ; 
+    cascade.load("haarcascade_frontalface_alt2.xml") ;
 
     std::unique_ptr<tensorflow::Session> session = initSession("20170512-110547.pb");
 
