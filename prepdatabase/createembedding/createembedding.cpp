@@ -201,7 +201,12 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face , int
 }
 
 
-
+bool isFloat(string s) {
+    istringstream iss(s);
+    float dummy;
+    iss >> noskipws >> dummy;
+    return iss && iss.eof();     // Result converted to bool
+}
 
 
 int main( int argc, char** argv )
@@ -217,6 +222,7 @@ int main( int argc, char** argv )
 
     bool gen_dt = false;
     bool show_crop = false;
+    bool splitdb = false;
 
     for (int i = 0; i < argc; ++i)
     {
@@ -224,7 +230,18 @@ int main( int argc, char** argv )
         {
            gen_dt = true ;
         }
-    }    
+        if (strcmp( argv[i], "-splitdb") == 0 )
+            {
+                if (i != argc-1 && isFloat(argv[i+1]))
+                {
+                    splitdb = true ;
+                    percent_frac = atof(argv[i+1]);
+                } else {
+                    cout <<" No percentage given, database not split " << endl;
+                }
+                
+        }
+    }
 
 
     if (gen_dt)
