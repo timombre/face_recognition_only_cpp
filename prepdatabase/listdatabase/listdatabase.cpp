@@ -109,6 +109,7 @@ int main(int argc, char *argv[])
 	std::string dirPath = argv[1];
 	bool splitdb = false;
 	float percent_frac = 100.0;
+	bool keepratio = false;
 
 	for (int i = 0; i < argc; ++i)
 	{
@@ -128,6 +129,10 @@ int main(int argc, char *argv[])
 	        }
 	        
 	    }
+	    if (strcmp( argv[i], "-kr") == 0 )
+	    {
+	    	keepratio = true ;
+	    }
 	}
 
 	// Get recursive list of files in given directory and its sub directories
@@ -146,7 +151,6 @@ int main(int argc, char *argv[])
 		myfile.close();
 		
 	} else {
-
 		std::vector<std::string> listOfDirs = getAllFilesInDir(dirPath, true);
 		std::vector< std::vector<std::string> > filesInDataset;
 		
@@ -159,26 +163,47 @@ int main(int argc, char *argv[])
 	    mytestset.open ("labels_and_files_of_database_testset.txt");
 	    mygenset.open ("labels_and_files_of_database.txt");
 
-	    for (auto folder : listOfDirs)
-	    {
-	    	std::vector<std::string> listOfFiles = getAllFilesInDir(folder, false);
+		if (keepratio == false)
+		{
+			std::vector<std::string> listOfFiles = getAllFilesInDir(dirPath, false);
+			std::vector<unsigned int> indices(listOfFiles.size());
+		    std::iota(indices.begin(), indices.end(), 0);
+		    std::shuffle(indices.begin(), indices.end(), generator);
+
+		    for (int i = 0; i < int(listOfFiles.size() * percent_frac / 100.0); ++i)
+		    {
+		    	mygenset <<  listOfFiles[indices[i]] << std::endl;
+		    }
+
+		    for (int i = int(listOfFiles.size() * percent_frac / 100.0); i < listOfFiles.size(); ++i)
+		    {
+		    	mytestset <<  listOfFiles[indices[i]] << std::endl;
+		    }
 
 
-	    	std::vector<unsigned int> indices(listOfFiles.size());
-	    	std::iota(indices.begin(), indices.end(), 0);
-	    	std::shuffle(indices.begin(), indices.end(), generator);
+		} else {
 
-	    	for (int i = 0; i < int(listOfFiles.size() * percent_frac / 100.0); ++i)
-	    	{
-	    		mygenset <<  listOfFiles[indices[i]] << std::endl;
-	    	}
 
-	    	for (int i = int(listOfFiles.size() * percent_frac / 100.0); i < listOfFiles.size(); ++i)
-	    	{
-	    		mytestset <<  listOfFiles[indices[i]] << std::endl;
-	    	}
-	    }
-		
+		    for (auto folder : listOfDirs)
+		    {
+		    	std::vector<std::string> listOfFiles = getAllFilesInDir(folder, false);
+
+
+		    	std::vector<unsigned int> indices(listOfFiles.size());
+		    	std::iota(indices.begin(), indices.end(), 0);
+		    	std::shuffle(indices.begin(), indices.end(), generator);
+
+		    	for (int i = 0; i < int(listOfFiles.size() * percent_frac / 100.0); ++i)
+		    	{
+		    		mygenset <<  listOfFiles[indices[i]] << std::endl;
+		    	}
+
+		    	for (int i = int(listOfFiles.size() * percent_frac / 100.0); i < listOfFiles.size(); ++i)
+		    	{
+		    		mytestset <<  listOfFiles[indices[i]] << std::endl;
+		    	}
+		    }
+		}		
 
 		mygenset.close();
 		mytestset.close();
