@@ -86,6 +86,7 @@ root folder
     cd prepdatabase
     ./prepdatabase.sh PATH_TO_YOUR_DATA_DIRECTORY 
     # you can add the -gen_aligned_db flag to generate the intermediary aligned database
+    # you can also randomly split your dataset -splitdb "percentage" (-kr will keep your ratio among labels)
     cd ..
     ./face_recognition face_embeddings_database.txt
     # you can add the -show_crop flag if you want to display the analyzed sub pictures
