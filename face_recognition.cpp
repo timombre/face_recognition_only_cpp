@@ -376,17 +376,17 @@ int main( int argc, const char** argv )
     }
 
     std::vector<std::string> database = ReadLabelsAndEmbeddings(argv[1]);
-    std::vector<std::string> label_database  = database; // segfault if not initialized
-    std::vector<std::string> embeddings_database = database; // segfault if not initialized
+    std::vector<std::string> label_database;
+    std::vector<std::string> embeddings_database;
     std::vector<std::vector<float>> embeddings_float;
     embeddings_float.reserve(database.size() * 512); //512 embeddings
 
 
-    for (int i = 0; i < label_database.size(); ++i){
+    for (int i = 0; i < database.size(); ++i){
 
             std::string mystring = database[i];
-            label_database[i] = mystring.substr(0, mystring.find_first_of(" "));
-            embeddings_database[i] = mystring.substr(mystring.find_first_of(" ")+1);
+            label_database.push_back(mystring.substr(0, mystring.find_first_of(" ")));
+            embeddings_database.push_back(mystring.substr(mystring.find_first_of(" ")+1));
 
     } 
 
