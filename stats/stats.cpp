@@ -1,14 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <algorithm>
-#include <string>
-#include <cstring>
-#include <experimental/filesystem>
-#include <random>
+#include <sstream>
 
 using namespace std;
-namespace filesys = std::experimental::filesystem;
 
 
 std::vector<std::string> ReadLabelsAndFile(const std::string file_name) {
@@ -53,13 +48,23 @@ int main(int argc, char *argv[])
     std::vector<std::string> database = ReadLabelsAndFile(argv[1]);
     std::vector<std::string> test_database = ReadLabelsAndFile(argv[2]);
 
-    std::vector<std::vector<float>> embeddings_float;
-    embeddings_float.reserve(database.size() * 512);
+    std::vector<std::string> label_database, test_label_database;
+    label_database.reserve(database.size());
+    test_label_database.reserve(database.size());
 
-    std::vector<std::vector<float>> test_embeddings_float;
+    std::vector<std::vector<float>> embeddings_float, test_embeddings_float;
+    embeddings_float.reserve(database.size() * 512); // embeddings is a vector with 512 components
     test_embeddings_float.reserve(database.size() * 512);
 
-	
+    for (int i = 0; i < database.size(); ++i){
+        label_database.push_back(database[i].substr(0, database[i].find_first_of(" ")));
+        embeddings_float.push_back(ConvStringToFloats(database[i].substr(database[i].find_first_of(" ")+1)));
+    }
+
+    for (int i = 0; i < test_database.size(); ++i){
+    	test_label_database.push_back(test_database[i].substr(0, test_database[i].find_first_of(" ")));
+        test_embeddings_float.push_back(ConvStringToFloats(test_database[i].substr(test_database[i].find_first_of(" ")+1)));
+    }
 
 }
 

@@ -378,15 +378,16 @@ int main( int argc, const char** argv )
     std::vector<std::string> database = ReadLabelsAndEmbeddings(argv[1]);
     std::vector<std::string> label_database;
     std::vector<std::string> embeddings_database;
+    label_database.reserve(database.size());
+    embeddings_database.reserve(database.size());
     std::vector<std::vector<float>> embeddings_float;
     embeddings_float.reserve(database.size() * 512); //512 embeddings
 
 
     for (int i = 0; i < database.size(); ++i){
 
-            std::string mystring = database[i];
-            label_database.push_back(mystring.substr(0, mystring.find_first_of(" ")));
-            embeddings_database.push_back(mystring.substr(mystring.find_first_of(" ")+1));
+            label_database.push_back( database[i].substr(0,  database[i].find_first_of(" ")));
+            embeddings_database.push_back( database[i].substr( database[i].find_first_of(" ")+1));
 
     } 
 
