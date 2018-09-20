@@ -208,88 +208,25 @@ bool isFloat(string s) {
     return iss && iss.eof();     // Result converted to bool
 }
 
-
-int main( int argc, char** argv )
-{
-    if( argc < 3)
-    {
-     cout <<" Usage: give a folder and label file" << endl;
-     return -1;
-    }
-    std::vector<std::string> database = ReadLabelsAndFile(argv[2]);
-    std::vector<std::string> label_database  = ReadLabelsAndFile(argv[2]); // segfault if not initialized
-    std::vector<std::string> file_database = ReadLabelsAndFile(argv[2]); // segfault if not initialized
-
-    bool gen_dt = false;
-    bool show_crop = false;
-    bool splitdb = false;
-
-    for (int i = 0; i < argc; ++i)
-    {
-        if (strcmp( argv[i], "-gen_aligned_db") == 0)
-        {
-           gen_dt = true ;
-        }
-        if (strcmp( argv[i], "-splitdb") == 0 )
-            {
-                if (i != argc-1 && isFloat(argv[i+1]))
-                {
-                    splitdb = true ;
-                    percent_frac = atof(argv[i+1]);
-                } else {
-                    cout <<" No percentage given, database not split " << endl;
-                }
-                
-        }
-    }
-
-
-    if (gen_dt)
-    {
-        string folder = "/../aligned_data_base";
-
-        stringstream call_line;
-
-        call_line << "if [ ! -d " << argv[1] << folder << " ]; then mkdir " << argv[1] << folder << " ; fi ;";
-        //call_line << "if [ ! -d " << argv[1] << folder << " ]; then echo plop ; fi ;";
-
-        system(call_line.str().c_str());
-
-
-      
-        for (int i = 0; i < label_database.size(); ++i)
-        {
-            stringstream second_call_line;
-            second_call_line << "if [ ! -d " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ]; then mkdir " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ; fi ;";
-            system(second_call_line.str().c_str());
-        }
-
-    }
-
-
-   
-    CascadeClassifier cascade;
-
-    // Load everything needed
-    cascade.load("../haarcascade_frontalface_alt2.xml");
-
-    Ptr<Facemark> facemark = FacemarkLBF::create();
-    facemark->loadModel("../lbfmodel.yaml");
-
-    std::unique_ptr<tensorflow::Session> session = initSession("../20170512-110547.pb");
+void genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
+                   std::vector<std::string> database, std::string location,  bool show_crop,  bool gen_dt) {
+    std::vector<std::string> label_database;
+    std::vector<std::string> file_database;
+    label_database.reserve(database.size());
+    file_database.reserve(database.size());
 
     ofstream myfile;
-    myfile.open ("../face_embeddings_database.txt");
+    myfile.open (filename);
+
 
     for (int i = 0; i < database.size(); ++i)
         {
             std::string mystring = database[i];
-            label_database[i] = mystring.substr(0, mystring.find_first_of(" "));
-            file_database[i] = mystring.substr(mystring.find_first_of(" ")+1);
-
+            label_database.push_back(mystring.substr(0, mystring.find_first_of(" ")));
+            file_database.push_back(mystring.substr(mystring.find_first_of(" ")+1));
 
             //write string with correct path            
-            std::string imtoread = string(argv[1]);
+            std::string imtoread = location;
 
             imtoread.append("/"); imtoread.append(label_database[i]); imtoread.append("/"); imtoread.append(file_database[i]);
             
@@ -299,7 +236,7 @@ int main( int argc, char** argv )
             if(! image.data )                // Check for invalid input
             {
                 cout <<  "Could not open or find the image" << std::endl ;
-                return -1;
+                return ;
             }
 
             vector<Rect> faces;
@@ -324,7 +261,7 @@ int main( int argc, char** argv )
                 if(! smallImg.data )                // Check for invalid input
                 {
                     cout <<  "Could not open or find the image" << std::endl ;
-                    return -1;
+                    return ;
                 }
 
                 Rect r = faces[0];
@@ -354,12 +291,12 @@ int main( int argc, char** argv )
                 if(! smallImgROI.data )                // Check for invalid input
                 {
                     cout <<  "Could not open or find the image" << std::endl ;
-                    return -1;
+                    return ;
                 }
 
                 if (gen_dt)
                 {
-                    std::string aligned_data_base = string(argv[1]);
+                    std::string aligned_data_base = location;
                     aligned_data_base.append("/../aligned_data_base/"); aligned_data_base.append(label_database[i]); aligned_data_base.append("/"); aligned_data_base.append(file_database[i]);
                     imwrite(aligned_data_base, smallImgROI);
                 }
@@ -385,11 +322,12 @@ int main( int argc, char** argv )
                 phase_tensor.scalar<bool>()() = false;
 
                 //Run session
+                
                 std::vector<Tensor> outputs ;
-                Status run_status = session->Run({{input_layer, input_tensor},
+                Status run_status = session.Run({{input_layer, input_tensor},
                                                {phase_train_layer, phase_tensor}}, 
                                                {output_layer}, {}, &outputs);
-
+                
                 auto output_c = outputs[0].tensor<float, 2>();
                 myfile << label_database[i] << " ";
                 
@@ -403,6 +341,93 @@ int main( int argc, char** argv )
         }
 
     myfile.close();
+
+}
+
+
+int main( int argc, char** argv )
+{
+    if( argc < 3)
+    {
+     cout <<" Usage: give a folder and label file" << endl;
+     return -1;
+    }
+    std::vector<std::string> database = ReadLabelsAndFile(argv[2]);
+    
+    std::string testset;
+    float percent_frac;    
+
+
+    bool gen_dt = false;
+    bool show_crop = false;
+    bool splitdb = false;
+    bool process_test = false;
+
+    for (int i = 0; i < argc; ++i)
+    {
+        if (strcmp( argv[i], "-gen_aligned_db") == 0)
+        {
+           gen_dt = true ;
+        }
+        if (strcmp( argv[i], "-splitdb") == 0 )
+        {
+            if (i != argc-1 && isFloat(argv[i+1]))
+            {
+                splitdb = true ;
+                percent_frac = atof(argv[i+1]);
+            } else {
+                cout <<" No percentage given, database not split " << endl;
+            }
+        }
+        if (strcmp( argv[i], "-testset") == 0 && i != argc-1 && argv[i+1])
+        {
+           testset = argv[i+1] ;
+           process_test = true;
+        }
+    }
+
+
+    if (gen_dt)
+    {
+        string folder = "/../aligned_data_base";
+
+        stringstream call_line;
+
+        call_line << "if [ ! -d " << argv[1] << folder << " ]; then mkdir " << argv[1] << folder << " ; fi ;";
+        //call_line << "if [ ! -d " << argv[1] << folder << " ]; then echo plop ; fi ;";
+
+        system(call_line.str().c_str());
+
+
+      
+        for (int i = 0; i < database.size(); ++i)
+        {
+            stringstream second_call_line;
+            second_call_line << "if [ ! -d " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ]; then mkdir " << argv[1] << folder << "/" << database[i].substr(0, database[i].find_first_of(" ")) << " ; fi ;";
+            system(second_call_line.str().c_str());
+        }
+
+    }   
+   
+
+    // Load everything needed
+    CascadeClassifier cascade;
+    cascade.load("../haarcascade_frontalface_alt2.xml");
+
+    Ptr<Facemark> facemark = FacemarkLBF::create();
+    facemark->loadModel("../lbfmodel.yaml");
+
+    std::unique_ptr<tensorflow::Session> session = initSession("../20170512-110547.pb");
+
+    genEmbeddings(cascade, facemark, *session, "../face_embeddings_database.txt", database, argv[1], show_crop, gen_dt);
+
+    if (splitdb && process_test)
+    {
+        std::vector<std::string> test_database = ReadLabelsAndFile(testset);
+        genEmbeddings(cascade, facemark, *session, "../face_embeddings_test_database.txt", test_database, argv[1], show_crop, gen_dt);
+    }  
+
+    
 
     return 0;
 }

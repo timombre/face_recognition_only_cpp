@@ -143,7 +143,7 @@ int main(int argc, char *argv[])
 		for (auto str : listOfFiles){
 			myfile <<  str << std::endl;
 		}
-			myfile.close();
+		myfile.close();
 		
 	} else {
 
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
 
 	    for (auto folder : listOfDirs)
 	    {
-	    	std::vector<std::string> listOfFiles = getAllFilesInDir(folder,false);
+	    	std::vector<std::string> listOfFiles = getAllFilesInDir(folder, false);
 
 
 	    	std::vector<unsigned int> indices(listOfFiles.size());
