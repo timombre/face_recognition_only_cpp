@@ -137,6 +137,14 @@ std::vector<float> ConvStringToFloats(std::string str){
     return vect;
 }
 
+bool isFloat(string s) {
+    istringstream iss(s);
+    float dummy;
+    iss >> noskipws >> dummy;
+    return iss && iss.eof();     // Result converted to bool
+}
+
+
 cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int i, bool show_crop){
 
     //description of the landmarks in case someone wants to do something custom
@@ -219,7 +227,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
                     std::vector<std::string> label_database,
                     std::vector<std::string> embeddings_database,
-                    bool show_crop)
+                    bool show_crop, float thresh)
 {
     vector<Rect> faces;
     Mat smallImg;
@@ -324,7 +332,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
         cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
 
-        if(min_emb_diff < 0.045) {
+        if(min_emb_diff < thresh) {
             cout <<"Hello " << label_database[posofmin] << " confidence: " << min_emb_diff << endl;
             if ( cvRound(r.y*scale -12 * linewidth) > 0 )
             {
@@ -359,6 +367,7 @@ int main( int argc, const char** argv )
     }
 
     bool show_crop = false;
+    float thresh = 0.045;
 
     if (argc > 2)
     {
@@ -369,6 +378,18 @@ int main( int argc, const char** argv )
            if (strcmp( argv[i], "-show_crop") == 0)
            {
                show_crop = true ;
+           }
+
+           if (strcmp( argv[i], "-thresh") == 0 )
+           {
+               if (i != argc-1 && isFloat(argv[i+1]))
+               {
+                   thresh = atof(argv[i+1]);
+                   
+               } else {
+                cout <<" No threshold given, keeps " << thresh << " default " << endl;
+               }
+               
            }
 
         }
@@ -423,7 +444,8 @@ int main( int argc, const char** argv )
                            &session,
                            label_database,
                            embeddings_database,
-                           show_crop
+                           show_crop,
+                           thresh
                            );
             char c = (char)waitKey(10);
          

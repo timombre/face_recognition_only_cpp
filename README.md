@@ -90,6 +90,14 @@ root folder
     cd ..
     ./face_recognition face_embeddings_database.txt
     # you can add the -show_crop flag if you want to display the analyzed sub pictures
+    #you can also tune the minimum display distance -thresh "float" (default is set at 0.045)
+
+
+## Stats :
+
+With a split database, you can now somewhat evaluate your model
+
+    ./stats/stats.out ./face_embeddings_database.txt ./face_embeddings_test_database.txt -thresh 0.05
 
 
 ## WIP :

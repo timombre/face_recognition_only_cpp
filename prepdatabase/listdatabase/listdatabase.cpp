@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
 		ofstream myfile;
 	    myfile.open ("labels_and_files_of_database.txt");
 
-		for (auto str : listOfFiles){
+		for (const auto& str : listOfFiles){
 			myfile <<  str << std::endl;
 		}
 		myfile.close();
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
 		} else {
 
 
-		    for (auto folder : listOfDirs)
+		    for (const auto& folder : listOfDirs)
 		    {
 		    	std::vector<std::string> listOfFiles = getAllFilesInDir(folder, false);
 
