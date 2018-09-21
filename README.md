@@ -94,6 +94,8 @@ root folder
 
 ## WIP :
 
--Average the result on predictions meeting minimal distance requirements
+-Making full Statistical analysis and Linear algebra investigation (Stop using the minimal distance with all points and create volumes in embedding space for each label)
+
+-Refactoring (This is growing, need headers ...)
 
 -Average the result on several consecutive frames

@@ -125,14 +125,13 @@ std::vector<std::string> ReadLabelsAndEmbeddings(const std::string file_name) {
 std::vector<float> ConvStringToFloats(std::string str){
 
     std::vector<float> vect;
+    vect.reserve(512); // embedding is 512 component vector
     std::istringstream stm(str) ;
     
     float number;
 
     while(stm >> number){
-       
-                vect.push_back(number);
-                            
+        vect.push_back(number);
     }
 
     return vect;
@@ -381,7 +380,7 @@ int main( int argc, const char** argv )
     label_database.reserve(database.size());
     embeddings_database.reserve(database.size());
     std::vector<std::vector<float>> embeddings_float;
-    embeddings_float.reserve(database.size() * 512); //512 embeddings
+    embeddings_float.reserve(database.size());
 
 
     for (int i = 0; i < database.size(); ++i){
