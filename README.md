@@ -97,7 +97,7 @@ root folder
 
 With a split database, you can now somewhat evaluate your model
 
-    ./stats/stats.out ./face_embeddings_database.txt ./face_embeddings_test_database.txt -thresh 0.05
+    ./stats/stats.out face_embeddings_database.txt face_embeddings_test_database.txt -thresh "float"
 
 
 ## WIP :
