@@ -90,7 +90,7 @@ root folder
     cd ..
     ./face_recognition face_embeddings_database.txt
     # you can add the -show_crop flag if you want to display the analyzed sub pictures
-    #you can also tune the minimum display distance -thresh "float" (default is set at 0.045)
+    # you can also tune the minimum display distance -thresh "float" (default is set at 0.045)
 
 
 ## Stats :
