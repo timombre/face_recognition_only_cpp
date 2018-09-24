@@ -97,17 +97,18 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
     labelstats.wrong_final_predictions = 0 ;
     labelstats.outofrange_final_predictions = 0 ;
 
+    int posofmin =0;
+
     size_t i =0;
     for (const auto& lab : comp.labels)
     {
-        if (label.compare(lab))
+        if (label == lab)
         {
             size_t j =0;
-            int posofmin =0;
-            float min_diff =SquaredDistance(ref.embeddings[i],comp.embeddings[0]);
-            for (const auto& lab2 : comp.labels)
+            float min_diff =SquaredDistance(comp.embeddings[i],ref.embeddings[j]);
+            for (const auto& lab2 : ref.labels)
             {
-                sdist = SquaredDistance(ref.embeddings[i],comp.embeddings[j]);
+                sdist = SquaredDistance(ref.embeddings[j],comp.embeddings[i]);
 
                 //std::cout << i << " " << j << std::endl;
                 //std::cout << sdist << std::endl;
@@ -115,12 +116,15 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
                 if (sdist > thresh)
                 {
                     labelstats.outofrange_predictions++ ;
+                    //std::cout << "out of range : " << lab << " " << lab2 << std::endl;
                 } else {
-                    if (comp.labels[j].compare(lab))
+                    if (lab2 == lab)
                     {
                         labelstats.right_predictions++;
+                        //std::cout << "good : " << lab << " " << lab2 << std::endl;
                     } else {
                         labelstats.wrong_predictions++;
+                        //std::cout << "bad : " << lab << " " << lab2 << std::endl;
                     }
                 }
 
@@ -136,7 +140,7 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
             {
                 labelstats.outofrange_final_predictions++ ;
             } else {
-                if (ref.labels[posofmin].compare(lab))
+                if (ref.labels[posofmin] == lab)
                 {
                     labelstats.right_final_predictions++ ;
                 } else {
