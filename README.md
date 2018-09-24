@@ -82,12 +82,11 @@ root folder
 |   |   ....
 ```
 ## Create embeddings data base and run code :
-
-    cd prepdatabase
-    ./prepdatabase.sh PATH_TO_YOUR_DATA_DIRECTORY 
+   
+    ./embed_database PATH_TO_YOUR_DATA_DIRECTORY 
     # you can add the -gen_aligned_db flag to generate the intermediary aligned database
-    # you can also randomly split your dataset -splitdb "percentage" (-kr will keep your ratio among labels)
-    cd ..
+    # you can also randomly split your dataset -splitdb "percentage"
+
     ./face_recognition face_embeddings_database.txt
     # you can add the -show_crop flag if you want to display the analyzed sub pictures
     # you can also tune the minimum display distance -thresh "float" (default is set at 0.045)
@@ -95,9 +94,9 @@ root folder
 
 ## Stats :
 
-With a split database, you can now somewhat evaluate your model
+With a split database, you can also somewhat evaluate your model
 
-    ./stats/stats.out face_embeddings_database.txt face_embeddings_test_database.txt -thresh "float"
+    ./stats face_embeddings_database.txt face_embeddings_database_testset.txt -thresh "float"
 
 
 ## WIP :

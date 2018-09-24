@@ -45,8 +45,12 @@ dataSet CreateDataSet(std::string file){
     embeddings_float.reserve(database.size());
 
     for (int i = 0; i < database.size(); ++i){
-        label_database.push_back(database[i].substr(0, database[i].find_first_of(" ")));
-        embeddings_float.push_back(ConvStringToFloats(database[i].substr(database[i].find_first_of(" ")+1)));
+        if ( database[i].length() >0 )
+        {
+            label_database.push_back(database[i].substr(0, database[i].find_first_of(" ")));
+            embeddings_float.push_back(ConvStringToFloats(database[i].substr(database[i].find_first_of(" ")+1)));
+        }
+        
     }
 
     std::set<std::string> unique_from_label_database( label_database.begin(), label_database.end() );
