@@ -9,24 +9,27 @@ CODE_DIRS = prepdatabase/createembedding prepdatabase/listdatabase
 CXXFLAGS := --std=c++17
 INCLUDES := -I/usr/local/lib/python3.6/dist-packages/tensorflow/include/  -I$(TF_BUILDDIR) -I$(TF_BUILDDIR)/bazel-genfiles/ 
 LIBS := -L$(TF_BUILDDIR)/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_framework `pkg-config --libs --cflags opencv` -lstdc++fs -O3 -lm 
-main: 	
+main: src/libfacerecognition.cpp src/listdatabase.cpp src/createembedding.cpp src/stats.cpp src/face_recognition.cpp
 	TF_BUILDDIR=$(TF_BUILDDIR) $(MAKE) -C prepdatabase/createembedding;
-	$(MAKE) -C prepdatabase/listdatabase;
-	$(MAKE) -C stats;
+	$(CXX) src/listdatabase.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o listdatabase.out
+	$(CXX) src/createembedding.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o createembedding.out
+	$(CXX) src/stats.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o stats.out
+	$(CXX) src/face_recognition.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o face_recognition
 
-	$(CXX) face_recognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o face_recognition
+face_recognition: src/libfacerecognition.cpp src/face_recognition.cpp
+	$(CXX) src/face_recognition.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o face_recognition
 
-justface_recognition: face_recognition.cpp
-	$(CXX) face_recognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o face_recognition
+listdatabase: src/libfacerecognition.cpp src/listdatabase.cpp
+	$(CXX) src/listdatabase.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o listdatabase.out
 
-clean:
+createembedding: src/libfacerecognition.cpp src/createembedding.cpp
+	$(CXX) src/createembedding.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o createembedding.out
 
-	
-	$(MAKE) -C prepdatabase/createembedding clean ;
-	$(MAKE) -C prepdatabase/listdatabase clean ;
-	$(MAKE) -C stats clean ;
-    
+stats: src/libfacerecognition.cpp src/stats.cpp
+	$(CXX) src/stats.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o stats.out
 
-	rm -f face_recognition
+clean:    
+
+	rm -f face_recognition *.out
 
 
