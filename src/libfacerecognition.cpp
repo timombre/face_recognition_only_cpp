@@ -485,138 +485,124 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
     imshow( "Face Detection", img );
 }
 
-void genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
-                   std::vector<std::string> database, std::string location,  bool show_crop,  bool gen_dt){
-    std::vector<std::string> label_database;
-    std::vector<std::string> file_database;
-    label_database.reserve(database.size());
-    file_database.reserve(database.size());
+std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
+                   std::string label,  bool gen_dt, std::string data_root ){
 
-    ofstream myfile;
-    myfile.open (filename);
+    std::string embedding;
+
+    std::cout << "processing :" << filename << '\n'; 
+    
+    Mat image = imread(filename, CV_LOAD_IMAGE_COLOR);   
+    if(! image.data )                // Check for invalid input
+    {
+        cout <<  "Could not open or find the image" << std::endl ;
+        return embedding;
+    }
+
+    vector<Rect> faces;
+    double scale=1; //modify if needed
+    
+    double fx = 1 / scale;
+    Mat smallImg;
+    
+    resize( image, smallImg, Size(), fx, fx, CV_INTER_LINEAR );
+
+    
+    cascade.detectMultiScale( smallImg, faces, 1.1, 
+                            7, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
 
 
-    for (int i = 0; i < database.size(); ++i)
+    if (faces.size() !=1)
+    {
+        cout <<  "There should be exactly 1 face" << std::endl ;
+        return embedding;
+       
+    }else{               
+
+        if(! smallImg.data )                // Check for invalid input
         {
-            std::string mystring = database[i];
-            label_database.push_back(mystring.substr(0, mystring.find_first_of(" ")));
-            file_database.push_back(mystring.substr(mystring.find_first_of(" ")+1));
+            cout <<  "Could not open or find the image" << std::endl ;
+            return embedding;
+        }
 
-            //write string with correct path            
-            std::string imtoread = location;
+        Rect r = faces[0];
 
-            imtoread.append("/"); imtoread.append(label_database[i]); imtoread.append("/"); imtoread.append(file_database[i]);
-            
-            std::cout << "processing :" << imtoread << '\n';   
+        Mat detectlandmarks;
+
+        vector<vector<Point2f>> landmarks;
         
-            Mat image = imread(imtoread, CV_LOAD_IMAGE_COLOR);   
-            if(! image.data )                // Check for invalid input
+        // Run landmark detector
+        bool success = facemark->fit(smallImg,faces,landmarks);
+
+        Mat smallImgROI ;
+
+        if(success)
+        {
+        // If success, align face
+            for(int i = 0; i < landmarks.size(); i++)
             {
-                cout <<  "Could not open or find the image" << std::endl ;
-                return ;
-            }
-
-            vector<Rect> faces;
-            double scale=1; //modify if needed
-            
-            double fx = 1 / scale;
-            Mat smallImg;
-            
-            resize( image, smallImg, Size(), fx, fx, CV_INTER_LINEAR );
-
-            
-            cascade.detectMultiScale( smallImg, faces, 1.1, 
-                                    7, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
-
-
-            if (faces.size() !=1)
-            {
-                cout <<  "There should be exactly 1 face" << std::endl ;
-               
-            }else{               
-
-                if(! smallImg.data )                // Check for invalid input
+                if (landmarks[i].size()==68)
                 {
-                    cout <<  "Could not open or find the image" << std::endl ;
-                    return ;
+                    smallImgROI = faceCenterRotateCrop(smallImg,landmarks[i],faces[i],i,false);
                 }
 
-                Rect r = faces[0];
-
-                Mat detectlandmarks;
-
-                vector<vector<Point2f>> landmarks;
-                
-                // Run landmark detector
-                bool success = facemark->fit(smallImg,faces,landmarks);
-
-                Mat smallImgROI ;
-
-                if(success)
-                {
-                // If success, align face
-                    for(int i = 0; i < landmarks.size(); i++)
-                    {
-                        if (landmarks[i].size()==68)
-                        {
-                            smallImgROI = faceCenterRotateCrop(smallImg,landmarks[i],faces[i],i,show_crop);
-                        }
-
-                    }
-                }
-
-                if(! smallImgROI.data )                // Check for invalid input
-                {
-                    cout <<  "Could not open or find the image" << std::endl ;
-                    return ;
-                }
-
-                if (gen_dt)
-                {
-                    std::string aligned_data_base = location;
-                    aligned_data_base.append("/../aligned_data_base/"); aligned_data_base.append(label_database[i]); aligned_data_base.append("/"); aligned_data_base.append(file_database[i]);
-                    imwrite(aligned_data_base, smallImgROI);
-                }
-
-                auto data = smallImgROI.data;
-                Tensor input_tensor(tensorflow::DT_FLOAT, tensorflow::TensorShape({1,smallImgROI.rows,smallImgROI.cols,3}));
-                auto input_tensor_mapped = input_tensor.tensor<float, 4>(); 
-
-                for (int x = 0; x < smallImgROI.cols; ++x) {
-                    for (int y = 0; y < smallImgROI.rows; ++y) {
-                        for (int c = 0; c < 3; ++c) {
-                            int offset = y * smallImgROI.cols + x * 3 + c;
-                            input_tensor_mapped(0, y, x, c) = tensorflow::uint8(data[offset]);
-                        }
-                    }
-                }
-
-                //Tensor Flow graph specifics :
-                string input_layer = "input";
-                string phase_train_layer = "phase_train";
-                string output_layer = "embeddings";
-                tensorflow::Tensor phase_tensor(tensorflow::DT_BOOL, tensorflow::TensorShape());
-                phase_tensor.scalar<bool>()() = false;
-
-                //Run session
-                
-                std::vector<Tensor> outputs ;
-                Status run_status = session.Run({{input_layer, input_tensor},
-                                               {phase_train_layer, phase_tensor}}, 
-                                               {output_layer}, {}, &outputs);
-                
-                auto output_c = outputs[0].tensor<float, 2>();
-                myfile << label_database[i] << " ";
-                
-                for (int i = 0; i <  outputs[0].shape().dim_size(1); ++i)
-                {
-                    myfile << output_c(0,i) << " ";
-                }
-                
-                myfile << "\n" ;
             }
         }
 
-    myfile.close();
+        if(! smallImgROI.data )                // Check for invalid input
+        {
+            cout <<  "Could not open or find the image" << std::endl ;
+            return embedding;
+        }
 
+        if (gen_dt)
+        {
+            std::string aligned_data_base = data_root;
+            aligned_data_base.append("/../aligned_data_base/"); aligned_data_base.append(label); aligned_data_base.append("/"); aligned_data_base.append(filename.substr(filename.find_last_of("/") +1));
+            imwrite(aligned_data_base, smallImgROI);
+        }
+
+        auto data = smallImgROI.data;
+        Tensor input_tensor(tensorflow::DT_FLOAT, tensorflow::TensorShape({1,smallImgROI.rows,smallImgROI.cols,3}));
+        auto input_tensor_mapped = input_tensor.tensor<float, 4>(); 
+
+        for (int x = 0; x < smallImgROI.cols; ++x) {
+            for (int y = 0; y < smallImgROI.rows; ++y) {
+                for (int c = 0; c < 3; ++c) {
+                    int offset = y * smallImgROI.cols + x * 3 + c;
+                    input_tensor_mapped(0, y, x, c) = tensorflow::uint8(data[offset]);
+                }
+            }
+        }
+
+        //Tensor Flow graph specifics :
+        string input_layer = "input";
+        string phase_train_layer = "phase_train";
+        string output_layer = "embeddings";
+        tensorflow::Tensor phase_tensor(tensorflow::DT_BOOL, tensorflow::TensorShape());
+        phase_tensor.scalar<bool>()() = false;
+
+        //Run session
+        
+        std::vector<Tensor> outputs ;
+        Status run_status = session.Run({{input_layer, input_tensor},
+                                       {phase_train_layer, phase_tensor}}, 
+                                       {output_layer}, {}, &outputs);
+        
+        auto output_c = outputs[0].tensor<float, 2>();
+
+        embedding.append(label);
+
+        
+        
+        for (int i = 0; i <  outputs[0].shape().dim_size(1); ++i)
+        {
+            embedding.append(" ");
+            std::ostringstream ss;
+            ss << output_c(0,i);
+            embedding.append(ss.str());
+        }
+        
+       return embedding;
+    }
 }

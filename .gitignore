@@ -1,9 +1,10 @@
 #
 face_recognition
 face_embeddings_database.txt
-face_embeddings_test_database.txt
+face_embeddings_database_testset.txt
 labels_and_files_of_database.txt
 labels_and_files_of_database_testset.txt
+
 
 
 # Tensorflow Models

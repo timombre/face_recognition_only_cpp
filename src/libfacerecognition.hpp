@@ -107,8 +107,8 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     std::vector<std::string> embeddings_database,
                     bool show_crop, float thresh);
 
-void genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
-                   std::vector<std::string> database, std::string location,  bool show_crop,  bool gen_dt);
+std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
+                   std::string label,  bool gen_dt, std::string data_root);
 
 std::vector<float> ConvStringToFloats(std::string str);
 
