@@ -34,8 +34,7 @@ std::vector<float> ConvStringToFloats(std::string str){
     return vect;
 }
 
-dataSet CreateDataSet(std::string file)
-{
+dataSet CreateDataSet(std::string file){
     dataSet data;
 
     std::vector<std::string> database = ReadLabelsAndEmbeddings(file);
@@ -82,8 +81,7 @@ float SquaredDistance(std::vector<float> vect1, std::vector<float> vect2){
     return diff;
 }
 
-dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  float thresh)
-{
+dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  float thresh){
 
     dataHandler labelstats;
     float sdist;
@@ -155,8 +153,7 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
 }
 
 
-std::vector<std::string> getAllFilesInDir(const std::string &dirPath, bool dir)
-{
+std::vector<std::string> getAllFilesInDir(const std::string &dirPath, bool dir){
 
     // Create a vector of string
     std::vector<std::string> list;
@@ -202,7 +199,7 @@ std::vector<std::string> getAllFilesInDir(const std::string &dirPath, bool dir)
     return list;
 }
 
-bool isFloat(string s) {
+bool isFloat(string s){
     istringstream iss(s);
     float dummy;
     iss >> noskipws >> dummy;
@@ -212,8 +209,7 @@ bool isFloat(string s) {
 
 
 
-static tensorflow::Status ReadEntireFile(tensorflow::Env* env, const std::string& filename,
-                             Tensor* output) {
+static tensorflow::Status ReadEntireFile(tensorflow::Env* env, const std::string& filename, Tensor* output){
     tensorflow::uint64 file_size = 0;
     TF_RETURN_IF_ERROR(env->GetFileSize(filename, &file_size));
 
@@ -235,8 +231,7 @@ static tensorflow::Status ReadEntireFile(tensorflow::Env* env, const std::string
 }
 
 
-tensorflow::Status LoadGraph(const std::string& graph_file_name,
-                 std::unique_ptr<tensorflow::Session>* session) {
+tensorflow::Status LoadGraph(const std::string& graph_file_name, std::unique_ptr<tensorflow::Session>* session) {
     tensorflow::GraphDef graph_def;
     Status load_graph_status =
         ReadBinaryProto(tensorflow::Env::Default(), graph_file_name, &graph_def);
@@ -264,7 +259,7 @@ std::unique_ptr<tensorflow::Session> initSession(std::string graphpath){
     return session;
 }
 
-std::vector<std::string> ReadLabelsAndEmbeddings(const std::string file_name) {
+std::vector<std::string> ReadLabelsAndEmbeddings(const std::string file_name){
     
     std::ifstream infile(file_name);
     std::string label_file;
@@ -361,8 +356,8 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
                     std::vector<std::string> label_database,
                     std::vector<std::string> embeddings_database,
-                    bool show_crop, float thresh)
-{
+                    bool show_crop, float thresh){
+
     vector<Rect> faces;
     Mat smallImg;
     double fx = 1 / scale; 
@@ -491,7 +486,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 }
 
 void genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
-                   std::vector<std::string> database, std::string location,  bool show_crop,  bool gen_dt) {
+                   std::vector<std::string> database, std::string location,  bool show_crop,  bool gen_dt){
     std::vector<std::string> label_database;
     std::vector<std::string> file_database;
     label_database.reserve(database.size());

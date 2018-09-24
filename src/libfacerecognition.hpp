@@ -17,7 +17,7 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  */
-
+#pragma once
 #include <opencv2/objdetect.hpp>
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
@@ -84,8 +84,7 @@ struct dataHandler
 std::vector<std::string> getAllFilesInDir(const std::string &dirPath, bool dir);
 
 
-static tensorflow::Status ReadEntireFile(tensorflow::Env* env, const std::string& filename,
-                             Tensor* output);
+static tensorflow::Status ReadEntireFile(tensorflow::Env* env, const std::string& filename, Tensor* output);
 
 tensorflow::Status LoadGraph(const std::string& graph_file_name,
                  std::unique_ptr<tensorflow::Session>* session);
