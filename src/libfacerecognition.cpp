@@ -98,7 +98,7 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
     labelstats.outofrange_final_predictions = 0 ;
 
     size_t i =0;
-    for (const auto& lab : ref.labels)
+    for (const auto& lab : comp.labels)
     {
         if (label.compare(lab))
         {
@@ -136,7 +136,7 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
             {
                 labelstats.outofrange_final_predictions++ ;
             } else {
-                if (comp.labels[posofmin].compare(lab))
+                if (ref.labels[posofmin].compare(lab))
                 {
                     labelstats.right_final_predictions++ ;
                 } else {
