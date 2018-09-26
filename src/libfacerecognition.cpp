@@ -501,7 +501,7 @@ void genDatabase( Mat& im, float period, std::clock_t &timestamp, std::string fi
 
     imshow( "Database generation", im );
 
-    if (std::clock() - timestamp > period * 1000000) //clock is in nanoseconds
+    if (std::clock() - timestamp > period * 1000000) //clock is in microseconds
         {
             timestamp = std::clock() ;
             imshow( "Snapshot", im );
