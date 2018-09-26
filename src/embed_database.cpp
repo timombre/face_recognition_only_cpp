@@ -40,6 +40,11 @@ int main( int argc, char** argv ){
     std::vector<std::string> listOfFilesDataset;
 	std::vector<std::string> listOfFilesDatasetTest;
 
+	std::string pbfile = "20170512-110547.pb";
+	std::string cascfile = "haarcascade_frontalface_alt2.xml";
+	std::string lmfile = "lbfmodel.yaml";
+
+
 	for (int i = 0; i < argc; ++i)
 	{
 	    if (strcmp( argv[i], "-splitdb") == 0 )
@@ -72,7 +77,23 @@ int main( int argc, char** argv ){
 	    {
 	       gen_aligned_db = true ;
 	    }
+	    if (strcmp( argv[i], "-choose_pb") == 0 && i != argc-1 && argv[i+1])
+	    {
+	        pbfile = argv[i+1];
+	    }
+	    if (strcmp( argv[i], "-choose_casc") == 0 && i != argc-1 && argv[i+1])
+	    {
+	        cascfile = argv[i+1];
+	    }
+	    if (strcmp( argv[i], "-choose_lm") == 0 && i != argc-1 && argv[i+1])
+	    {
+	        lmfile = argv[i+1];           
+	    }
 	}
+
+	std::cout << pbfile << std::endl;
+
+
 
 	
 	
@@ -80,34 +101,36 @@ int main( int argc, char** argv ){
 
 	if (gen_aligned_db)
 	{
-	    string root_folder = "/../aligned_data_base";
+	    std::string root_folder = dirPath + "/../aligned_data_base";
+	    filesys::create_directory(root_folder);
 
-	    stringstream call_line;
+	    //stringstream call_line;
 
-	    call_line << "if [ ! -d " << argv[1] << root_folder << " ]; then mkdir " << argv[1] << root_folder << " ; fi ;";
+	    //call_line << "if [ ! -d " << argv[1] << root_folder << " ]; then mkdir " << argv[1] << root_folder << " ; fi ;";
 	    //call_line << "if [ ! -d " << argv[1] << folder << " ]; then echo plop ; fi ;";
 
-	    system(call_line.str().c_str());
+	    //system(call_line.str().c_str());
 
 
 	  
 	    for (const auto& folder : listOfDirs)
 	    {
-	        stringstream second_call_line;
-	        second_call_line << "if [ ! -d " << argv[1] << root_folder << "/" << folder.substr(folder.find_last_of("/") +1) << " ]; then mkdir " << argv[1] << root_folder << "/" << folder.substr(folder.find_last_of("/") +1) << " ; fi ;";
-	        system(second_call_line.str().c_str());
+	        //stringstream second_call_line;
+	        //second_call_line << "if [ ! -d " << argv[1] << root_folder << "/" << folder.substr(folder.find_last_of("/") +1) << " ]; then mkdir " << argv[1] << root_folder << "/" << folder.substr(folder.find_last_of("/") +1) << " ; fi ;";
+	        //system(second_call_line.str().c_str());
+	        filesys::create_directory(root_folder + "/" + folder.substr(folder.find_last_of("/") +1) );
 	    }
 
 	}
 
 	// Load everything needed
     CascadeClassifier cascade;
-    cascade.load("haarcascade_frontalface_alt2.xml");
+    cascade.load(cascfile);
 
     Ptr<Facemark> facemark = FacemarkLBF::create();
-    facemark->loadModel("lbfmodel.yaml");
+    facemark->loadModel(lmfile);
 
-    std::unique_ptr<tensorflow::Session> session = initSession("20170512-110547.pb");
+    std::unique_ptr<tensorflow::Session> session = initSession(pbfile);
 
 
 	std::vector< std::vector<std::string> > filesInDataset;

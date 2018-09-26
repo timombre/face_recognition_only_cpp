@@ -92,6 +92,8 @@ root folder
     # you can add the -show_crop flag if you want to display the analyzed sub pictures
     # you can also tune the minimum display distance -thresh "float" (default is set at 0.045)
 
+    # In both cases, you can use the -choose_pb -choose_lm -choose_casc followed by the appropriate files to use your own pb, landmark and Haarcascade files.
+
 
 ## Stats :
 

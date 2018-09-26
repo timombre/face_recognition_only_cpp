@@ -33,6 +33,10 @@ int main( int argc, const char** argv )
     bool show_crop = false;
     float thresh = 0.045;
 
+    std::string pbfile = "20170512-110547.pb";
+  std::string cascfile = "haarcascade_frontalface_alt2.xml";
+  std::string lmfile = "lbfmodel.yaml";
+
     if (argc > 2)
     {
         
@@ -54,6 +58,19 @@ int main( int argc, const char** argv )
                 cout <<" No threshold given, keeps " << thresh << " default " << endl;
                }
                
+           }
+
+           if (strcmp( argv[i], "-choose_pb") == 0 && i != argc-1 && argv[i+1])
+           {
+               pbfile = argv[i+1];
+           }
+           if (strcmp( argv[i], "-choose_casc") == 0 && i != argc-1 && argv[i+1])
+           {
+               cascfile = argv[i+1];
+           }
+           if (strcmp( argv[i], "-choose_lm") == 0 && i != argc-1 && argv[i+1])
+           {
+               lmfile = argv[i+1];           
            }
 
         }
@@ -81,13 +98,13 @@ int main( int argc, const char** argv )
   
     // Load everything needed    
     Ptr<Facemark> facemark = FacemarkLBF::create();
-    facemark->loadModel("lbfmodel.yaml");
+    facemark->loadModel(lmfile);
 
     CascadeClassifier cascade;
     double scale=1; 
-    cascade.load("haarcascade_frontalface_alt2.xml") ;
+    cascade.load(cascfile) ;
 
-    std::unique_ptr<tensorflow::Session> session = initSession("20170512-110547.pb");
+    std::unique_ptr<tensorflow::Session> session = initSession(pbfile);
 
  
     //Start Video..1) 0 for WebCam 2) "Path to Video" for a Local Video
