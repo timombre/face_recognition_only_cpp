@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
     {
     	fullstat.push_back(CreateDataHandler(substring, ref_database, test_database, thresh));
     }
+    std::cout << std::endl;
 
 }
 
