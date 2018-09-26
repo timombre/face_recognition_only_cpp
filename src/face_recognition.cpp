@@ -86,8 +86,8 @@ int main( int argc, const char** argv )
 
     for (int i = 0; i < database.size(); ++i){
 
-            label_database.push_back( database[i].substr(0,  database[i].find_first_of(" ")));
-            embeddings_database.push_back( database[i].substr( database[i].find_first_of(" ")+1));
+        label_database.push_back( database[i].substr(0,  database[i].find_first_of(" ")));
+        embeddings_database.push_back( database[i].substr( database[i].find_first_of(" ")+1));
 
     } 
 
@@ -115,8 +115,9 @@ int main( int argc, const char** argv )
         while(1)
         {
             capture >> frame;
-            if( frame.empty() )
+            if( frame.empty() ){
                 break;
+            }
             Mat frame1 = frame.clone();
             detectAndDraw(frame1, cascade,
                            facemark,
@@ -130,8 +131,9 @@ int main( int argc, const char** argv )
             char c = (char)waitKey(10);
          
             // Press q to exit from window
-            if( c == 27 || c == 'q' || c == 'Q' ) 
+            if( c == 27 || c == 'q' || c == 'Q' ){
                 break;
+            }
         }
     }
     else

@@ -77,8 +77,9 @@ int main( int argc, const char** argv )
         while(1)
         {
             capture >> frame;
-            if( frame.empty() )
+            if( frame.empty() ){
                 break;
+            }
 
             std::ostringstream oss;
             oss << dirPath << "/" << label << "/" << label << i << ".jpg";
@@ -90,8 +91,9 @@ int main( int argc, const char** argv )
             char c = (char)waitKey(10);
          
             // Press q to exit from window
-            if( c == 27 || c == 'q' || c == 'Q' ) 
+            if( c == 27 || c == 'q' || c == 'Q' ){
                 break;
+            }
         }
     }
     else
