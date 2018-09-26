@@ -56,18 +56,7 @@ int main(int argc, char *argv[])
     for (const auto& substring : ref_database.unique_labels)
     {
     	fullstat.push_back(CreateDataHandler(substring, ref_database, test_database, thresh));
-    	//std::cout << substring << std::endl;
     }
-
-
-    // for (const auto& substring : test_database.unique_labels)
-    // {
-    // 	//std::cout << substring << std::endl;
-    // }
-
-
-    //std::cout << uniquefromlabel_database << std::endl;
-    //std::cout << uniquefromtest_label_database << std::endl;
 
 }
 

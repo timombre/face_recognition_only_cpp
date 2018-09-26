@@ -34,8 +34,8 @@ int main( int argc, const char** argv )
     float thresh = 0.045;
 
     std::string pbfile = "20170512-110547.pb";
-  std::string cascfile = "haarcascade_frontalface_alt2.xml";
-  std::string lmfile = "lbfmodel.yaml";
+    std::string cascfile = "haarcascade_frontalface_alt2.xml";
+    std::string lmfile = "lbfmodel.yaml";
 
     if (argc > 2)
     {
@@ -55,23 +55,22 @@ int main( int argc, const char** argv )
                    thresh = atof(argv[i+1]);
                    
                } else {
-                cout <<" No threshold given, keeps " << thresh << " default " << endl;
+                cout <<" No threshold given, keeping " << thresh << " as default " << endl;
                }
-               
            }
 
-           if (strcmp( argv[i], "-choose_pb") == 0 && i != argc-1 && argv[i+1])
-           {
+            if (strcmp( argv[i], "-choose_pb") == 0 && i != argc-1 && argv[i+1])
+            {
                pbfile = argv[i+1];
-           }
-           if (strcmp( argv[i], "-choose_casc") == 0 && i != argc-1 && argv[i+1])
-           {
+            }
+            if (strcmp( argv[i], "-choose_casc") == 0 && i != argc-1 && argv[i+1])
+            {
                cascfile = argv[i+1];
-           }
-           if (strcmp( argv[i], "-choose_lm") == 0 && i != argc-1 && argv[i+1])
-           {
+            }
+            if (strcmp( argv[i], "-choose_lm") == 0 && i != argc-1 && argv[i+1])
+            {
                lmfile = argv[i+1];           
-           }
+            }
 
         }
     }

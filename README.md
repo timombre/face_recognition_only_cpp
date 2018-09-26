@@ -60,9 +60,7 @@ Download Tensorflow weightfile (The accuracy is better with older 20170512-11054
 
 ## Create a dataset of faces for each person :
 
-    sudo apt install ffmpeg
-    ffmpeg -i /dev/video0 /PATH-FOR-VID/LABEL.mkv #modify dev/video0 if needed and choose your path
-    ffmpeg -i /PATH-FOR-VID/LABEL.mkv -vf fps=2 /PATH-FOR-IMAGES/LABEL_%04d.jpg -hide_banner
+    ./databasegenerator DATABASEFOLDER NAMEFORLABEL # you can tune the snapshot rate -fps 0.25, default is 0.5
     
 Note : This is just for code testing, it is a very bad way to create a dataset as all pictures will have the same background and global features. If you already have independant pictures use them.
 

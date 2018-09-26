@@ -52,6 +52,7 @@
 
 #include <experimental/filesystem>
 #include <random>
+#include <ctime>
  
 using namespace std;
 using namespace cv;
@@ -106,6 +107,8 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     std::vector<std::string> label_database,
                     std::vector<std::string> embeddings_database,
                     bool show_crop, float thresh);
+
+void genDatabase(Mat& im, float period, std::clock_t &timestamp, std::string filename, int &i);
 
 std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
                    std::string label,  bool gen_dt, std::string data_root);

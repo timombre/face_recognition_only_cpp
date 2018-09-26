@@ -2,6 +2,7 @@
 face_recognition
 embed_database
 stats
+databasegenerator
 
 # Generated files
 face_embeddings_database.txt

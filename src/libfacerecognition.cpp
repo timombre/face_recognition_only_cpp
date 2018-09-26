@@ -497,6 +497,20 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
     imshow( "Face Detection", img );
 }
 
+void genDatabase( Mat& im, float period, std::clock_t &timestamp, std::string filename, int &i){
+
+    imshow( "Database generation", im );
+
+    if (std::clock() - timestamp > period * 1000000) //clock is in nanoseconds
+        {
+            timestamp = std::clock() ;
+            imshow( "Snapshot", im );
+            imwrite(filename, im);
+            i++ ;
+        }    
+
+}
+
 std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
                    std::string label,  bool gen_dt, std::string data_root ){
 
