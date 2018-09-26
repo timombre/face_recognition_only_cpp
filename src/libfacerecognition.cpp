@@ -110,25 +110,20 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
             {
                 sdist = SquaredDistance(ref.embeddings[j],comp.embeddings[i]);
 
-                //std::cout << i << " " << j << std::endl;
-                //std::cout << sdist << std::endl;
-
                 if (sdist > thresh)
                 {
                     labelstats.outofrange_predictions++ ;
                     //std::cout << "\033[1;33m"<< "out of range: " << lab << " " << lab2 << "\033[0m" << std::endl;
-                    //std::cout << "out of range : " << lab << " " << lab2 << std::endl;
+
                 } else {
                     if (lab2 == lab)
                     {
                         labelstats.right_predictions++;
                         //std::cout << "\033[1;32m"<< "good: " << lab << " " << lab2 << "\033[0m" << std::endl;
-                        //std::cout << "good : " << lab << " " << lab2 << std::endl;
+                       
                     } else {
                         labelstats.wrong_predictions++;
-
                         //std::cout << "\033[1;31m"<< "bad: " << lab << " " << lab2 << "\033[0m" << std::endl;
-                        //std::cout << "bad : " << lab << " " << lab2 << std::endl;
                     }
                 }
 
@@ -217,7 +212,6 @@ bool isFloat(string s){
     iss >> noskipws >> dummy;
     return iss && iss.eof();     // Result converted to bool
 }
-
 
 
 
@@ -319,7 +313,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     model_points.push_back(cv::Point3d(150.0f, -150.0f, -125.0f));       // Right mouth corner
 
     // Camera internals
-    double focal_length = im.cols; // Approximate focal length. //3 nb channels
+    double focal_length = im.cols; // Approximate focal length.
     Point2d center = cv::Point2d(im.cols/2,im.rows/2);
     cv::Mat camera_matrix = (cv::Mat_<double>(3,3) << focal_length, 0, center.x, 0 , focal_length, center.y, 0, 0, 1);
     cv::Mat dist_coeffs = cv::Mat::zeros(4,1,cv::DataType<double>::type); // Assuming no lens distortion
@@ -361,8 +355,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     return Cropped_Face ;
 }
 
- 
-// Function for Face Detection
+
 void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     Ptr<Facemark> facemark,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
