@@ -116,14 +116,18 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
                 if (sdist > thresh)
                 {
                     labelstats.outofrange_predictions++ ;
+                    //std::cout << "\033[1;33m"<< "out of range: " << lab << " " << lab2 << "\033[0m" << std::endl;
                     //std::cout << "out of range : " << lab << " " << lab2 << std::endl;
                 } else {
                     if (lab2 == lab)
                     {
                         labelstats.right_predictions++;
+                        //std::cout << "\033[1;32m"<< "good: " << lab << " " << lab2 << "\033[0m" << std::endl;
                         //std::cout << "good : " << lab << " " << lab2 << std::endl;
                     } else {
                         labelstats.wrong_predictions++;
+
+                        //std::cout << "\033[1;31m"<< "bad: " << lab << " " << lab2 << "\033[0m" << std::endl;
                         //std::cout << "bad : " << lab << " " << lab2 << std::endl;
                     }
                 }
@@ -151,10 +155,10 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
         i++;
     }
 
-    std::cout <<  label << std::endl;
+    std::cout << "\n" << "\033[1;35m" <<  label << "\033[0m" << std::endl;
 
-    std::cout << "tot right: " <<  labelstats.right_predictions << " tot wrong: " <<  labelstats.wrong_predictions << " tot outofrange: " << labelstats.outofrange_predictions << std::endl;
-    std::cout << "tot right_final: " <<  labelstats.right_final_predictions << " tot wrong_final: " <<  labelstats.wrong_final_predictions << " tot outofrange_final: " << labelstats.outofrange_final_predictions << std::endl;
+    std::cout << "\033[1;32m" << "tot right: " <<  labelstats.right_predictions << "\033[0m" << "\033[1;31m" << " tot wrong: " <<  labelstats.wrong_predictions << "\033[0m" << "\033[1;33m" << " tot outofrange: " << labelstats.outofrange_predictions << "\033[0m" << std::endl;
+    std::cout << "\033[1;32m" << "tot right_final: " <<  labelstats.right_final_predictions << "\033[0m" << "\033[1;31m" << " tot wrong_final: " <<  labelstats.wrong_final_predictions << "\033[0m" << "\033[1;33m" <<" tot outofrange_final: " << labelstats.outofrange_final_predictions << "\033[0m" << std::endl;
 
     return labelstats ;
 

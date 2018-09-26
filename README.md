@@ -85,7 +85,8 @@ root folder
    
     ./embed_database PATH_TO_YOUR_DATA_DIRECTORY 
     # you can add the -gen_aligned_db flag to generate the intermediary aligned database
-    # you can also randomly split your dataset -splitdb "percentage"
+    # you can also randomly (while conserving the global ratio within labels) split your dataset -splitdb "percentage" 
+    # and -filesname to generate the list of the files ending in either dataset
 
     ./face_recognition face_embeddings_database.txt
     # you can add the -show_crop flag if you want to display the analyzed sub pictures
