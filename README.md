@@ -104,8 +104,6 @@ With a split database, you can also somewhat evaluate your model
 
 ## WIP :
 
--Making full Statistical analysis and Linear algebra investigation (Stop using the minimal distance with all points and create volumes in embedding space for each label)
-
--Refactoring (This is growing, need headers ...)
+-Linear algebra investigation (Stop using the minimal distance with all points and create volumes in embedding space for each label, see if it's better)
 
 -Average the result on several consecutive frames
