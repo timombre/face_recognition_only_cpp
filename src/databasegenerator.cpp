@@ -63,10 +63,7 @@ int main( int argc, const char** argv )
     timestamp = std::clock();
 
     double period = double(1/freq);
-    int i = 0 ;
-
-    std::cout << timestamp << std::endl;
-    
+    int i = 0 ; 
  
     //Start Video..1) 0 for WebCam 2) "Path to Video" for a Local Video
     capture.open(0); 
