@@ -97,6 +97,8 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
     labelstats.wrong_final_predictions = 0 ;
     labelstats.outofrange_final_predictions = 0 ;
 
+    std::cout << "\n" << "\033[1;35m" <<  label << "\033[0m" << std::endl;
+
     int posofmin =0;
 
     size_t i =0;
@@ -144,13 +146,13 @@ dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  flo
                     labelstats.right_final_predictions++ ;
                 } else {
                     labelstats.wrong_final_predictions++ ;
+                    std::cout << "\033[1;34m" << "confused " <<  ref.labels[posofmin] << " with " << lab << "\033[0m" << std::endl;
+
                 }
             }
         }
         i++;
     }
-
-    std::cout << "\n" << "\033[1;35m" <<  label << "\033[0m" << std::endl;
 
     std::cout << "\033[1;32m" << "tot right: " <<  labelstats.right_predictions << "\033[0m" << "\033[1;31m" << " tot wrong: " <<  labelstats.wrong_predictions << "\033[0m" << "\033[1;33m" << " tot outofrange: " << labelstats.outofrange_predictions << "\033[0m" << std::endl;
     std::cout << "\033[1;32m" << "tot right_final: " <<  labelstats.right_final_predictions << "\033[0m" << "\033[1;31m" << " tot wrong_final: " <<  labelstats.wrong_final_predictions << "\033[0m" << "\033[1;33m" <<" tot outofrange_final: " << labelstats.outofrange_final_predictions << "\033[0m" << std::endl;

@@ -79,7 +79,7 @@ int main( int argc, const char** argv )
             }
 
             std::ostringstream oss;
-            oss << dirPath << "/" << label << "/" << label << i << ".jpg";
+            oss << dirPath << "/" << label << "/" << label << "_" << i << ".jpg";
             std::string filename = oss.str();
 
             Mat frame1 = frame.clone();
