@@ -60,7 +60,7 @@ Download Tensorflow weightfile (The accuracy is better with older 20170512-11054
 
 ## Create a dataset of faces for each person :
 
-    ./databasegenerator DATABASEFOLDER NAMEFORLABEL # you can tune the snapshot rate with the flag -fps "frequency", default is 0.5
+    ./databasegenerator DATABASEFOLDER NAMEFORLABEL # you can tune the snapshot rate with the flag -fps "frequency", default is 1
     
 Note : This is just for code testing, it is a very bad way to create a dataset as all pictures will have the same background and global features. If you already have independant pictures use them.
 

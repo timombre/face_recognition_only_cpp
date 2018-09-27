@@ -29,7 +29,7 @@ int main( int argc, const char** argv )
     }
 
     bool show_crop = false;
-    float freq = 0.5;
+    float freq = 1;
     std::string dirPath = argv[1];
     std::string label = argv[2];
 
