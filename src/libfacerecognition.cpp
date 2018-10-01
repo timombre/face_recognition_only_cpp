@@ -216,29 +216,6 @@ bool isFloat(string s){
 }
 
 
-
-static tensorflow::Status ReadEntireFile(tensorflow::Env* env, const std::string& filename, Tensor* output){
-    tensorflow::uint64 file_size = 0;
-    TF_RETURN_IF_ERROR(env->GetFileSize(filename, &file_size));
-
-    std::string contents;
-    contents.resize(file_size);
-
-    std::unique_ptr<tensorflow::RandomAccessFile> file;
-    TF_RETURN_IF_ERROR(env->NewRandomAccessFile(filename, &file));
-
-    tensorflow::StringPiece data;
-    TF_RETURN_IF_ERROR(file->Read(0, file_size, &data, &(contents)[0]));
-    if (data.size() != file_size) {
-    return tensorflow::errors::DataLoss("Truncated read of '", filename,
-                                        "' expected ", file_size, " got ",
-                                        data.size());
-    }
-    output->scalar<std::string>()() = data.ToString();
-    return Status::OK();
-}
-
-
 tensorflow::Status LoadGraph(const std::string& graph_file_name, std::unique_ptr<tensorflow::Session>* session) {
     tensorflow::GraphDef graph_def;
     Status load_graph_status =
@@ -361,8 +338,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
 void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     Ptr<Facemark> facemark,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
-                    std::vector<std::string> label_database,
-                    std::vector<std::string> embeddings_database,
+                    dataSet database,
                     bool show_crop, float thresh){
 
     vector<Rect> faces;
@@ -448,10 +424,10 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         int posofmin=0;
 
 
-        for (int i = 0; i < label_database.size(); ++i){
+        for (int i = 0; i < database.labels.size(); ++i){
             float diff=0;
 
-            std::vector<float> vect = ConvStringToFloats(embeddings_database[i]);
+            std::vector<float> vect = database.embeddings[i];
 
 
             for (int j = 0; j < outputs[0].shape().dim_size(1); ++j){
@@ -469,12 +445,12 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
 
         if(min_emb_diff < thresh) {
-            cout <<"Hello " << label_database[posofmin] << " confidence: " << min_emb_diff << endl;
+            cout <<"Hello " << database.labels[posofmin] << " confidence: " << min_emb_diff << endl;
             if ( cvRound(r.y*scale -12 * linewidth) > 0 )
             {
-                cv::putText(img, label_database[posofmin], txt_up, 1, linewidth , color );
+                cv::putText(img, database.labels[posofmin], txt_up, 1, linewidth , color );
             }else{ // write in box if box is too high
-                cv::putText(img, label_database[posofmin], txt_in, 1, linewidth , color );
+                cv::putText(img, database.labels[posofmin], txt_in, 1, linewidth , color );
             }
         }else{
             cout <<"WHO ARE YOU ?"<< " confidence: " << min_emb_diff << endl;

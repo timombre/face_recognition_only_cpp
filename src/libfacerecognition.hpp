@@ -104,8 +104,7 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
 void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     Ptr<Facemark> facemark,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
-                    std::vector<std::string> label_database,
-                    std::vector<std::string> embeddings_database,
+                    dataSet database,
                     bool show_crop, float thresh);
 
 void genDatabase(Mat& im, float period, std::clock_t &timestamp, std::string filename, int &i);
