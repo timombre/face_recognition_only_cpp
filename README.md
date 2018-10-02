@@ -98,6 +98,7 @@ root folder
 With a split database, you can also somewhat evaluate your model
 
     ./stats face_embeddings_database.txt face_embeddings_database_testset.txt -thresh "float"
+    ./stats face_embeddings_database.txt -avg_db # will give you stats per label
 
 
 ## WIP :
