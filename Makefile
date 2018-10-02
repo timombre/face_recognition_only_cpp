@@ -18,11 +18,11 @@ face_recognition: src/libfacerecognition.cpp src/face_recognition.cpp
 embed_database: src/libfacerecognition.cpp src/embed_database.cpp
 	$(CXX) src/embed_database.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o embed_database
 
-stats: src/libfacerecognition.cpp src/stats.cpp
-	$(CXX) src/stats.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o stats
+stats: src/statistics/libstats.cpp src/statistics/stats.cpp
+	$(CXX) src/statistics/stats.cpp src/statistics/libstats.cpp $(CXXFLAGS) -lstdc++fs -O3 -lm -o stats
 
-databasegenerator: src/databasegenerator.cpp
-	$(CXX) src/databasegenerator.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o databasegenerator
+databasegenerator: src/databasegeneration/databasegenerator.cpp
+	$(CXX) src/databasegeneration/databasegenerator.cpp $(CXXFLAGS) `pkg-config --libs --cflags opencv` -lstdc++fs -O3 -lm -o databasegenerator
 
 clean:
 	rm -f face_recognition embed_database stats databasegenerator

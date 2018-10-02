@@ -17,18 +17,19 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  */
-#include "libfacerecognition.hpp"
+#include "libstats.hpp"
 
 int main(int argc, char *argv[])
 {
 
 	if( argc < 3)
     {
-        std::cout <<" Usage: give a label_embeddings database file and a test database file" << std::endl;
+        std::cout <<" Usage: give a label_embeddings database file + a test database file or -gen avg_db" << std::endl;
         return -1;
     }
 
     float thresh = 0.045;
+    bool avg_db = false;
 
 
     for (int i = 0; i < argc; ++i)
@@ -44,20 +45,32 @@ int main(int argc, char *argv[])
             }
             
         }
+
+        if (strcmp( argv[i], "-avg_db") == 0 )
+        {
+            avg_db = true;
+        }
         
     }
 
     dataSet ref_database = CreateDataSet(argv[1]);
-    dataSet test_database = CreateDataSet(argv[2]);
-    
-    std::vector<dataHandler> fullstat;
-    fullstat.reserve(ref_database.unique_labels.size());
 
-    for (const auto& substring : ref_database.unique_labels)
+    if (avg_db == false)
     {
-    	fullstat.push_back(CreateDataHandler(substring, ref_database, test_database, thresh));
+        dataSet test_database = CreateDataSet(argv[2]);
+        
+        std::vector<dataHandler> fullstat;
+        fullstat.reserve(ref_database.unique_labels.size());
+
+        for (const auto& substring : ref_database.unique_labels)
+        {
+        	fullstat.push_back(CreateDataHandler(substring, ref_database, test_database, thresh));
+        }
+        std::cout << std::endl;
+    } else {
+
+        std::vector<datasetPoint> displayContext = CreateDataPoints(ref_database);
     }
-    std::cout << std::endl;
 
 }
 

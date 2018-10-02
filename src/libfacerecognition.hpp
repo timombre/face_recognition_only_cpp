@@ -81,6 +81,15 @@ struct dataHandler
 	
 };
 
+struct datasetPoint
+{
+	std::string label;
+	std::vector<float> meanposition;
+	float dataradius;
+};
+
+
+std::vector<float> vectmean(const std::vector<std::vector<float>>& input);
 
 std::vector<std::string> getAllFilesInDir(const std::string &dirPath, bool dir);
 
@@ -107,7 +116,6 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     dataSet database,
                     bool show_crop, float thresh);
 
-void genDatabase(Mat& im, float period, std::clock_t &timestamp, std::string filename, int &i);
 
 std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
                    std::string label,  bool gen_dt, std::string data_root);
@@ -117,6 +125,8 @@ std::vector<float> ConvStringToFloats(std::string str);
 dataSet CreateDataSet(std::string file);
 
 float SquaredDistance(std::vector<float> vect1, std::vector<float> vect2);
+
+std::vector<datasetPoint> CreateDataPoints(dataSet database);
 
 dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  float thresh);
 

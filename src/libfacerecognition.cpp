@@ -22,7 +22,8 @@
 std::vector<float> ConvStringToFloats(std::string str){
 
     std::vector<float> vect;
-    vect.reserve(512); // embedding is a 512 components vector
+    //vect.reserve(512); // embedding is a 512 components vector in 20180408-102900.pb
+    vect.reserve(128); // embedding is a 128 components vector in 20170512-110547.pb
     std::istringstream stm(str) ;
     
     float number;
@@ -208,10 +209,10 @@ std::vector<std::string> getAllFilesInDir(const std::string &dirPath, bool dir){
     return list;
 }
 
-bool isFloat(string s){
-    istringstream iss(s);
+bool isFloat(std::string s){
+    std::istringstream iss(s);
     float dummy;
-    iss >> noskipws >> dummy;
+    iss >> std::noskipws >> dummy;
     return iss && iss.eof();     // Result converted to bool
 }
 
@@ -334,6 +335,70 @@ cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int 
     return Cropped_Face ;
 }
 
+std::vector<float>
+vectmean(const std::vector<std::vector<float>>& input) {
+    std::vector<float> ret;
+
+    if (not input.empty()) {
+        ret.resize(input[0].size());
+
+        for (const auto& i : input) {
+            for (size_t n=0; n<i.size(); n++)
+                ret[n] += i[n];
+        }
+
+        float ni = input.size();
+        for (auto& v : ret)
+            v /= ni;
+    }
+
+    return ret;
+}
+
+std::vector<datasetPoint> CreateDataPoints(dataSet database){
+    std::vector<datasetPoint> points;
+
+    for (const auto& label : database.unique_labels)
+    {
+        datasetPoint point;
+        std::vector<float> meanposition;
+        meanposition.reserve(database.embeddings[0].size());
+
+        std::vector<std::vector<float>> embgoodlabel;
+        float variance = 0.;
+
+        for (int i = 0; i < database.labels.size(); ++i)
+        {
+            
+            if (database.labels[i] == label)
+            {
+                embgoodlabel.push_back(database.embeddings[i]);
+            }
+            
+        }
+
+        meanposition = vectmean(embgoodlabel);       
+
+        for (int i = 0; i < embgoodlabel.size(); ++i)
+        {
+           variance += SquaredDistance(meanposition,embgoodlabel[i]);
+        }
+
+        variance = sqrt(variance / embgoodlabel.size() /embgoodlabel.size()) ;
+
+        point.meanposition = meanposition;
+        point.label = label;
+        point.dataradius = variance;
+
+        std::cout << "point : " << label << " variance : " << variance <<std::endl;
+        std::cout << "meanpos size " << meanposition.size() << " vector size : " << database.embeddings[0].size() <<std::endl;
+        points.push_back(point);
+
+    }
+    return points;
+
+}
+
 
 void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     Ptr<Facemark> facemark,
@@ -343,8 +408,8 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 
     vector<Rect> faces;
     Mat smallImg;
-    double fx = 1 / scale; 
-    resize( img, smallImg, Size(), fx, fx, CV_INTER_LINEAR ); 
+    double fx = 1 / scale;
+    resize( img, smallImg, Size(), fx, fx, CV_INTER_LINEAR );
    
     cascade.detectMultiScale( smallImg, faces, 1.1, 
                             7, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
@@ -364,7 +429,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
         Scalar color = Scalar(255, 0, 0); // Color for Drawing tool
 
         rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
-                cvPoint(cvRound((r.x + r.width-1)*scale), 
+                cvPoint(cvRound((r.x + r.width-1)*scale),
                 cvRound((r.y + r.height-1)*scale)), color, linewidth, 8, 0);
 
         Mat smallImgROI ;
@@ -433,7 +498,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
             for (int j = 0; j < outputs[0].shape().dim_size(1); ++j){
                 diff += (output_c(0,j) - vect[j]) * (output_c(0,j) - vect[j]) ;
             }
-            //diff= diff; //no need to sqrt
+            //diff= sqrt(diff); //no need to sqrt
             if (diff < min_emb_diff)
             {
                 min_emb_diff = diff ;
@@ -468,19 +533,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
     imshow( "Face Detection", img );
 }
 
-void genDatabase( Mat& im, float period, std::clock_t &timestamp, std::string filename, int &i){
 
-    imshow( "Database generation", im );
-
-    if (std::clock() - timestamp > period * 1000000) //clock is in microseconds
-        {
-            timestamp = std::clock() ;
-            imshow( "Snapshot", im );
-            imwrite(filename, im);
-            i++ ;
-        }    
-
-}
 
 std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,
                    std::string label,  bool gen_dt, std::string data_root ){
@@ -590,7 +643,7 @@ std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, ten
 
         embedding.append(label);
 
-        
+        std::cout <<outputs[0].shape().dim_size(0) << " " << outputs[0].shape().dim_size(1) << " " << outputs[0].shape().dim_size(2)<<std::endl;     
         
         for (int i = 0; i <  outputs[0].shape().dim_size(1); ++i)
         {

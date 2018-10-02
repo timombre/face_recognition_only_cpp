@@ -43,33 +43,33 @@ int main( int argc, const char** argv )
         for (int i = 0; i < argc; ++i)
         {
            
-           if (strcmp( argv[i], "-show_crop") == 0)
-           {
+            if (strcmp( argv[i], "-show_crop") == 0)
+            {
                show_crop = true ;
-           }
+            }
 
-           if (strcmp( argv[i], "-thresh") == 0 )
-           {
-               if (i != argc-1 && isFloat(argv[i+1]))
-               {
-                   thresh = atof(argv[i+1]);
+            if (strcmp( argv[i], "-thresh") == 0 )
+            {
+                if (i != argc-1 && isFloat(argv[i+1]))
+                {
+                    thresh = atof(argv[i+1]);
                    
-               } else {
-                cout <<" No threshold given, keeping " << thresh << " as default " << endl;
-               }
-           }
+                } else {
+                    cout <<" No threshold given, keeping " << thresh << " as default " << endl;
+                }
+            }
 
             if (strcmp( argv[i], "-choose_pb") == 0 && i != argc-1 && argv[i+1])
             {
-               pbfile = argv[i+1];
+                pbfile = argv[i+1];
             }
             if (strcmp( argv[i], "-choose_casc") == 0 && i != argc-1 && argv[i+1])
             {
-               cascfile = argv[i+1];
+                cascfile = argv[i+1];
             }
             if (strcmp( argv[i], "-choose_lm") == 0 && i != argc-1 && argv[i+1])
             {
-               lmfile = argv[i+1];           
+                lmfile = argv[i+1];           
             }
 
         }

@@ -103,21 +103,9 @@ int main( int argc, char** argv ){
 	{
 	    std::string root_folder = dirPath + "/../aligned_data_base";
 	    filesys::create_directory(root_folder);
-
-	    //stringstream call_line;
-
-	    //call_line << "if [ ! -d " << argv[1] << root_folder << " ]; then mkdir " << argv[1] << root_folder << " ; fi ;";
-	    //call_line << "if [ ! -d " << argv[1] << folder << " ]; then echo plop ; fi ;";
-
-	    //system(call_line.str().c_str());
-
-
-	  
+	    	  
 	    for (const auto& folder : listOfDirs)
 	    {
-	        //stringstream second_call_line;
-	        //second_call_line << "if [ ! -d " << argv[1] << root_folder << "/" << folder.substr(folder.find_last_of("/") +1) << " ]; then mkdir " << argv[1] << root_folder << "/" << folder.substr(folder.find_last_of("/") +1) << " ; fi ;";
-	        //system(second_call_line.str().c_str());
 	        filesys::create_directory(root_folder + "/" + folder.substr(folder.find_last_of("/") +1) );
 	    }
 

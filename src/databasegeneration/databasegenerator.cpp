@@ -17,14 +17,51 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301 USA.
  */
-#include "libfacerecognition.hpp"
+#include <opencv2/objdetect.hpp>
+#include <opencv2/highgui.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/opencv.hpp>
+#include <opencv2/face.hpp>
+
+#include <experimental/filesystem>
+#include <random>
+#include <ctime>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
+using namespace cv;
+using namespace cv::face;
+
+namespace filesys = std::experimental::filesystem;
+
+void genDatabase( Mat& im, float period, std::clock_t &timestamp, std::string filename, int &i){
+
+    imshow( "Database generation", im );
+
+    if (std::clock() - timestamp > period * 1000000) //clock is in microseconds
+        {
+            timestamp = std::clock() ;
+            imshow( "Snapshot", im );
+            imwrite(filename, im);
+            i++ ;
+        }    
+
+}
+
+bool isFloat(std::string s){
+    std::istringstream iss(s);
+    float dummy;
+    iss >> std::noskipws >> dummy;
+    return iss && iss.eof();     // Result converted to bool
+}
 
 int main( int argc, const char** argv )
 {
 
     if( argc < 3)
     {
-        cout <<" Provide a database folder and a label" << endl;
+        std::cout <<" Provide a database folder and a label" << std::endl;
         return -1;
     }
 
@@ -49,7 +86,7 @@ int main( int argc, const char** argv )
                    freq = atof(argv[i+1]);
                    
                } else {
-                cout <<" Invalid frequency given, keeping " << freq << " as default " << endl;
+                std::cout <<" Invalid frequency given, keeping " << freq << " as default " << std::endl;
                }
            }
 
@@ -94,6 +131,6 @@ int main( int argc, const char** argv )
         }
     }
     else
-        cout<<"Could not Open Camera";
+        std::cout<<"Could not Open Camera";
     return 0;
 }
