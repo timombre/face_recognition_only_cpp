@@ -12,11 +12,11 @@ LIBS := -L$(TF_BUILDDIR)/bazel-bin/tensorflow -ltensorflow_cc -ltensorflow_frame
 
 all: face_recognition embed_database stats databasegenerator
 	
-face_recognition: src/libfacerecognition.cpp src/face_recognition.cpp
-	$(CXX) src/face_recognition.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o face_recognition
+face_recognition: src/libfacerecognition.cpp src/face_recognition.cpp src/statistics/libstats.cpp
+	$(CXX) src/face_recognition.cpp src/libfacerecognition.cpp src/statistics/libstats.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o face_recognition
 
-embed_database: src/libfacerecognition.cpp src/embed_database.cpp
-	$(CXX) src/embed_database.cpp src/libfacerecognition.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o embed_database
+embed_database: src/libfacerecognition.cpp src/embed_database.cpp src/statistics/libstats.cpp
+	$(CXX) src/embed_database.cpp src/libfacerecognition.cpp src/statistics/libstats.cpp $(CXXFLAGS) $(INCLUDES) $(LIBS) -o embed_database
 
 stats: src/statistics/libstats.cpp src/statistics/stats.cpp
 	$(CXX) src/statistics/stats.cpp src/statistics/libstats.cpp $(CXXFLAGS) -lstdc++fs -O3 -lm -o stats

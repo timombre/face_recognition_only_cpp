@@ -53,6 +53,8 @@
 #include <experimental/filesystem>
 #include <random>
 #include <ctime>
+
+#include "statistics/libstats.hpp"
  
 using namespace std;
 using namespace cv;
@@ -61,35 +63,6 @@ using namespace cv::face;
 
 namespace filesys = std::experimental::filesystem;
 
-
-struct dataSet
-{
-	std::vector<string> labels;
-	std::vector<std::vector<float>> embeddings;
-	std::set<std::string> unique_labels;
-
-};
-
-struct dataHandler
-{
-	int right_predictions;
-	int wrong_predictions;
-	int outofrange_predictions;
-	int right_final_predictions;
-	int wrong_final_predictions;
-	int outofrange_final_predictions;
-	
-};
-
-struct datasetPoint
-{
-	std::string label;
-	std::vector<float> meanposition;
-	float dataradius;
-};
-
-
-std::vector<float> vectmean(const std::vector<std::vector<float>>& input);
 
 std::vector<std::string> getAllFilesInDir(const std::string &dirPath, bool dir);
 
@@ -101,12 +74,6 @@ tensorflow::Status LoadGraph(const std::string& graph_file_name,
 
 
 std::unique_ptr<tensorflow::Session> initSession(std::string graphpath);
-
-std::vector<std::string> ReadLabelsAndEmbeddings(const std::string file_name);
-
-std::vector<float> ConvStringToFloats(std::string str);
-
-bool isFloat(string s);
 
 cv::Mat faceCenterRotateCrop(Mat &im, vector<Point2f> landmarks, Rect face, int i, bool show_crop);
 
@@ -121,12 +88,3 @@ std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, ten
                    std::string label,  bool gen_dt, std::string data_root);
 
 std::vector<float> ConvStringToFloats(std::string str);
-
-dataSet CreateDataSet(std::string file);
-
-float SquaredDistance(std::vector<float> vect1, std::vector<float> vect2);
-
-std::vector<datasetPoint> CreateDataPoints(dataSet database);
-
-dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  float thresh);
-
