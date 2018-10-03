@@ -81,7 +81,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     Ptr<Facemark> facemark,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
                     dataSet database,
-                    bool show_crop, float thresh);
+                    bool show_crop, float thresh, bool volume_points);
 
 
 std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, tensorflow::Session& session, std::string filename,

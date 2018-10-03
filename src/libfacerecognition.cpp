@@ -177,7 +177,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     Ptr<Facemark> facemark,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
                     dataSet database,
-                    bool show_crop, float thresh){
+                    bool show_crop, float thresh, bool volume_points){
 
     vector<Rect> faces;
     Mat smallImg;
@@ -199,12 +199,6 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
     {
         Rect r = faces[i];
         
-        Scalar color = Scalar(255, 0, 0); // Color for Drawing tool
-
-        rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
-                cvPoint(cvRound((r.x + r.width-1)*scale),
-                cvRound((r.y + r.height-1)*scale)), color, linewidth, 8, 0);
-
         Mat smallImgROI ;
 
         if(success)
@@ -257,48 +251,61 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 
         auto output_c = outputs[0].tensor<float, 2>();
 
-        float min_emb_diff =10000;
-        
-        int posofmin=0;
+        if (volume_points == false)
+        {
+            float min_emb_diff =10000;
+                    
+            int posofmin=0;
+
+            for (int i = 0; i < database.labels.size(); ++i){
+                float diff=0;
+
+                std::vector<float> vect = database.embeddings[i];
 
 
-        for (int i = 0; i < database.labels.size(); ++i){
-            float diff=0;
-
-            std::vector<float> vect = database.embeddings[i];
-
-
-            for (int j = 0; j < outputs[0].shape().dim_size(1); ++j){
-                diff += (output_c(0,j) - vect[j]) * (output_c(0,j) - vect[j]) ;
+                for (int j = 0; j < outputs[0].shape().dim_size(1); ++j){
+                    diff += (output_c(0,j) - vect[j]) * (output_c(0,j) - vect[j]) ;
+                }
+                //diff= sqrt(diff); //no need to sqrt
+                if (diff < min_emb_diff)
+                {
+                    min_emb_diff = diff ;
+                    posofmin = i ;
+                }                
             }
-            //diff= sqrt(diff); //no need to sqrt
-            if (diff < min_emb_diff)
-            {
-                min_emb_diff = diff ;
-                posofmin = i ;
-            }                
-        }
 
-        cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
-        cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
+            cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
+            cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
 
-        if(min_emb_diff < thresh) {
-            cout <<"Hello " << database.labels[posofmin] << " confidence: " << min_emb_diff << endl;
-            if ( cvRound(r.y*scale -12 * linewidth) > 0 )
-            {
-                cv::putText(img, database.labels[posofmin], txt_up, 1, linewidth , color );
-            }else{ // write in box if box is too high
-                cv::putText(img, database.labels[posofmin], txt_in, 1, linewidth , color );
-            }
-        }else{
-            cout <<"WHO ARE YOU ?"<< " confidence: " << min_emb_diff << endl;
-            if ( cvRound(r.y*scale - 12 * linewidth) > 0 )
-            {
-                cv::putText(img, "404", txt_up, 1, linewidth , color );
+            Scalar color = Scalar(255, 0, 0); // Color for Drawing tool
+
+            rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
+                    cvPoint(cvRound((r.x + r.width-1)*scale),
+                    cvRound((r.y + r.height-1)*scale)), color, linewidth, 8, 0);
+
+            if(min_emb_diff < thresh) {
+                std::cout <<"Hello " << database.labels[posofmin] << " confidence: " << min_emb_diff << std::endl;
+                if ( cvRound(r.y*scale -12 * linewidth) > 0 )
+                {
+                    cv::putText(img, database.labels[posofmin], txt_up, 1, linewidth , color );
+                }else{ // write in box if box is too high
+                    cv::putText(img, database.labels[posofmin], txt_in, 1, linewidth , color );
+                }
             }else{
-                cv::putText(img, "404", txt_in, 1, linewidth , color );
+                std::cout <<"WHO ARE YOU ?"<< " confidence: " << min_emb_diff << std::endl;
+                if ( cvRound(r.y*scale - 12 * linewidth) > 0 )
+                {
+                    cv::putText(img, "404", txt_up, 1, linewidth , color );
+                }else{
+                    cv::putText(img, "404", txt_in, 1, linewidth , color );
+                }
+
             }
+        } else {
+            std::cout <<"Plop"  << std::endl;
         }
+
+        
 
     }
  

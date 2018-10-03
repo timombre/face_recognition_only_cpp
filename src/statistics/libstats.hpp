@@ -33,12 +33,20 @@ using namespace std;
 
 namespace filesys = std::experimental::filesystem;
 
+struct datasetPoint
+{
+	std::string label;
+	std::vector<float> meanposition;
+	float dataradius;
+};
+
 
 struct dataSet
 {
 	std::vector<string> labels;
 	std::vector<std::vector<float>> embeddings;
 	std::set<std::string> unique_labels;
+	std::vector<datasetPoint> datasetFramework;
 
 };
 
@@ -51,13 +59,6 @@ struct dataHandler
 	int wrong_final_predictions;
 	int outofrange_final_predictions;
 	
-};
-
-struct datasetPoint
-{
-	std::string label;
-	std::vector<float> meanposition;
-	float dataradius;
 };
 
 
@@ -73,6 +74,6 @@ dataSet CreateDataSet(std::string file);
 
 float SquaredDistance(std::vector<float> vect1, std::vector<float> vect2);
 
-std::vector<datasetPoint> CreateDataPoints(dataSet database);
+std::vector<datasetPoint> CreateDataMeanPoints(dataSet database);
 
 dataHandler CreateDataHandler(std::string label, dataSet ref, dataSet comp,  float thresh);

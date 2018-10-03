@@ -31,6 +31,7 @@ int main( int argc, const char** argv )
     }
 
     bool show_crop = false;
+    bool volume_points = false;
     float thresh = 0.045;
 
     std::string pbfile = "20170512-110547.pb";
@@ -46,6 +47,11 @@ int main( int argc, const char** argv )
             if (strcmp( argv[i], "-show_crop") == 0)
             {
                show_crop = true ;
+            }
+
+            if (strcmp( argv[i], "-volume_points") == 0)
+            {
+               volume_points = true ;
             }
 
             if (strcmp( argv[i], "-thresh") == 0 )
@@ -111,7 +117,8 @@ int main( int argc, const char** argv )
                            &session,
                            database,
                            show_crop,
-                           thresh
+                           thresh,
+                           volume_points
                            );
             char c = (char)waitKey(10);
          

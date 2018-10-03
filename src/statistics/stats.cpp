@@ -69,8 +69,10 @@ int main(int argc, char *argv[])
         std::cout << std::endl;
     } else {
 
-        std::vector<datasetPoint> displayContext = CreateDataPoints(ref_database);
+        std::vector<datasetPoint> displayContext = CreateDataMeanPoints(ref_database);
     }
+
+
 
 }
 

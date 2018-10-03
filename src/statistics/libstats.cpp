@@ -44,6 +44,7 @@ dataSet CreateDataSet(std::string file){
     data.labels = label_database;
     data.embeddings = embeddings_float;
     data.unique_labels = unique_from_label_database;
+    data.datasetFramework = CreateDataMeanPoints(data);
 
     return data;
 
@@ -205,7 +206,7 @@ vectmean(const std::vector<std::vector<float>>& input) {
     return ret;
 }
 
-std::vector<datasetPoint> CreateDataPoints(dataSet database){
+std::vector<datasetPoint> CreateDataMeanPoints(dataSet database){
     std::vector<datasetPoint> points;
 
     for (const auto& label : database.unique_labels)
@@ -227,14 +228,14 @@ std::vector<datasetPoint> CreateDataPoints(dataSet database){
             
         }
 
-        meanposition = vectmean(embgoodlabel);       
+        meanposition = vectmean(embgoodlabel);  
 
         for (int i = 0; i < embgoodlabel.size(); ++i)
         {
            variance += SquaredDistance(meanposition,embgoodlabel[i]);
         }
 
-        variance = sqrt(variance / embgoodlabel.size() /embgoodlabel.size()) ;
+        variance = sqrt(variance / embgoodlabel.size() /embgoodlabel.size() );
 
         point.meanposition = meanposition;
         point.label = label;
