@@ -104,4 +104,5 @@ With a split database, you can also somewhat evaluate your model
 
 ## WIP :
 
+-Rework stats for Linear Algebra enabled
 -Average the result on several consecutive frames
