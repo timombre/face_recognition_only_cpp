@@ -31,8 +31,10 @@ int main( int argc, const char** argv )
     }
 
     bool show_crop = false;
-    bool volume_points = false;
-    float thresh = 0.045;
+    bool volume_points = true;
+    float thresh = 0.8;
+    float relative_probability = 1.4;
+    bool verbose =false;
 
     std::string pbfile = "20170512-110547.pb";
     std::string cascfile = "haarcascade_frontalface_alt2.xml";
@@ -49,9 +51,14 @@ int main( int argc, const char** argv )
                show_crop = true ;
             }
 
-            if (strcmp( argv[i], "-volume_points") == 0)
+            if (strcmp( argv[i], "-verbose") == 0)
             {
-               volume_points = true ;
+               verbose = true ;
+            }
+
+            if (strcmp( argv[i], "-mindist") == 0)
+            {
+               volume_points = false ;
             }
 
             if (strcmp( argv[i], "-thresh") == 0 )
@@ -62,6 +69,17 @@ int main( int argc, const char** argv )
                    
                 } else {
                     cout <<" No threshold given, keeping " << thresh << " as default " << endl;
+                }
+            }
+
+            if (strcmp( argv[i], "-rp") == 0 )
+            {
+                if (i != argc-1 && isFloat(argv[i+1]))
+                {
+                    relative_probability = atof(argv[i+1]);
+                   
+                } else {
+                    cout <<" No relative probability given, keeping " << relative_probability << " as default " << endl;
                 }
             }
 
@@ -118,8 +136,9 @@ int main( int argc, const char** argv )
                            database,
                            show_crop,
                            thresh,
-                           volume_points
-                           );
+                           volume_points,
+                           relative_probability,
+                           verbose);
             char c = (char)waitKey(10);
          
             // Press q to exit from window

@@ -177,7 +177,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
                     Ptr<Facemark> facemark,
                     double scale, std::unique_ptr<tensorflow::Session>* session,
                     dataSet database,
-                    bool show_crop, float thresh, bool volume_points){
+                    bool show_crop, float thresh, bool volume_points, float relative_probability, bool verbose){
 
     vector<Rect> faces;
     Mat smallImg;
@@ -251,6 +251,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 
         auto output_c = outputs[0].tensor<float, 2>();
 
+
         if (volume_points == false)
         {
             float min_emb_diff =10000;
@@ -302,10 +303,137 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 
             }
         } else {
-            std::cout <<"Plop"  << std::endl;
-        }
 
-        
+            std::vector<float> liveembedding;
+            liveembedding.reserve(128);
+
+            for (int i = 0; i < outputs[0].shape().dim_size(1); ++i)
+            {
+                liveembedding.emplace_back(output_c(0,i));
+            }
+
+            //std::cout <<liveembedding.size()  << std::endl;
+
+            //std::vector<datasetPoint> framework = database.datasetFramework ;
+            
+
+            if (verbose ==true)
+            {
+                std::cout << "\n" << std::endl;
+                for (const auto& point : database.datasetFramework)
+                {
+                    std::cout << point.label << ", distance: " << sqrt(SquaredDistance(point.meanposition, liveembedding)) << ", sigma: " << point.sigma  << std::endl;
+                    std::cout << point.label << ", confidence index: " << (1/point.sigma/sqrt(2*M_PI))*exp(-SquaredDistance(point.meanposition, liveembedding)/2/point.sigma/point.sigma)  << std::endl;
+                }
+            }
+
+            
+
+            std::vector<float> confidence_index;
+            std::vector<int> order;
+
+
+            for (int i = 0; i < database.datasetFramework.size(); ++i)
+            {
+                //datasetPoint point = database.datasetFramework[i];
+                confidence_index.push_back((1/database.datasetFramework[i].sigma/sqrt(2*M_PI))*exp(-SquaredDistance(database.datasetFramework[i].meanposition, liveembedding)/2/database.datasetFramework[i].sigma/database.datasetFramework[i].sigma)); //assumed gaussian distribution
+            }
+
+            std::vector<float> unsorted_confidence = confidence_index;
+
+            std::sort(confidence_index.begin(), confidence_index.end(), std::greater<>());
+
+            std::vector<std::string> sorted_labels;            
+
+            for (int i = 0; i < confidence_index.size(); ++i)
+            {
+                if (verbose ==true){std::cout << " sorted: " << confidence_index[i] << " unsorted: " << unsorted_confidence[i] << std::endl ;} 
+                for (int j = 0; j < confidence_index.size(); ++j)
+                {
+                    if (confidence_index[i] == unsorted_confidence[j])
+                    {
+                        sorted_labels.push_back(database.datasetFramework[j].label);
+                    }
+                }
+                if (verbose ==true){std::cout << " label: " << sorted_labels[i]  << std::endl ;}
+            }
+
+            if (confidence_index[0]< thresh)
+            {
+
+                cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
+                cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
+
+                Scalar color = Scalar(0, 0, 255); // Color for Drawing tool
+                rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
+                    cvPoint(cvRound((r.x + r.width-1)*scale),
+                    cvRound((r.y + r.height-1)*scale)), color, linewidth, 8, 0);
+                if ( cvRound(r.y*scale - 12 * linewidth) > 0 )
+                {
+                    cv::putText(img, "404", txt_up, 1, linewidth , color );
+                }else{
+                    cv::putText(img, "404", txt_in, 1, linewidth , color );
+                }
+            } else {
+                if (confidence_index[0]/confidence_index[1] < relative_probability)
+                {
+                    cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
+                    cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
+
+                    Scalar color = Scalar(0, 255, 0); // Color for Drawing tool
+                    rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
+                        cvPoint(cvRound((r.x + r.width-1)*scale),
+                        cvRound((r.y + r.height-1)*scale)), color, linewidth, 8, 0);
+                    if ( cvRound(r.y*scale - 12 * linewidth) > 0 )
+                    {
+                        cv::putText(img, sorted_labels[0], txt_up, 1, linewidth , color );
+                    }else{
+                        cv::putText(img, sorted_labels[0], txt_in, 1, linewidth , color );
+                    }
+                } else {
+                    std::string sub = "Or maybe: ";
+                    sub.append(sorted_labels[1]);
+                    for (int i = 2; i < confidence_index.size(); ++i)
+                    {
+                        if (confidence_index[0]/confidence_index[i] < relative_probability){
+                            sub.append(" or "); sub.append(sorted_labels[i]);
+                        }
+                    }
+                    sub.append(" ?");
+
+                    cv::Point txt_up = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale - 4 * linewidth));      
+                    cv::Point txt_in = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
+
+                    cv::Point subtitle = cvPoint(cvRound(r.x*scale + linewidth ), cvRound(r.y*scale + 12 * linewidth));
+
+                    Scalar color = Scalar(0, 165, 255); // Color for Drawing tool
+                    rectangle( img, cvPoint(cvRound(r.x*scale), cvRound(r.y*scale)),
+                        cvPoint(cvRound((r.x + r.width-1)*scale),
+                        cvRound((r.y + r.height-1)*scale)), color, linewidth, 8, 0);
+                    if ( cvRound(r.y*scale - 12 * linewidth) > 0 )
+                    {
+                        cv::putText(img, sorted_labels[0], txt_up, 1, linewidth , color );
+                    }else{
+                        cv::putText(img, sorted_labels[0], txt_in, 1, linewidth , color );
+                    }
+                    std::cout << sub << std::endl;
+
+                }
+            }
+
+            // for (int i = 0; i < database.datasetFramework.size(); ++i)
+            // {
+            //     for (int j = 0; j < database.datasetFramework.size(); ++j)
+            //     {
+            //         if ( confidence_index[j] == unsorted_confidence[i] )
+            //         {
+            //             order.push_back(j);
+            //             std::cout << j << " value: " << confidence_index[j] << std::endl ;
+            //         }
+            //     }
+            // }
+
+        }        
 
     }
  
@@ -394,7 +522,7 @@ std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, ten
 
         auto data = smallImgROI.data;
         Tensor input_tensor(tensorflow::DT_FLOAT, tensorflow::TensorShape({1,smallImgROI.rows,smallImgROI.cols,3}));
-        auto input_tensor_mapped = input_tensor.tensor<float, 4>(); 
+        auto input_tensor_mapped = input_tensor.tensor<float, 4>();
 
         for (int x = 0; x < smallImgROI.cols; ++x) {
             for (int y = 0; y < smallImgROI.rows; ++y) {
@@ -423,7 +551,7 @@ std::string genEmbeddings(CascadeClassifier cascade, Ptr<Facemark> facemark, ten
 
         embedding.append(label);
 
-        std::cout <<outputs[0].shape().dim_size(0) << " " << outputs[0].shape().dim_size(1) << " " << outputs[0].shape().dim_size(2)<<std::endl;     
+        //std::cout <<outputs[0].shape().dim_size(0) << " " << outputs[0].shape().dim_size(1) << " " << outputs[0].shape().dim_size(2)<<std::endl;     
         
         for (int i = 0; i <  outputs[0].shape().dim_size(1); ++i)
         {

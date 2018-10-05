@@ -45,6 +45,14 @@ dataSet CreateDataSet(std::string file){
     data.embeddings = embeddings_float;
     data.unique_labels = unique_from_label_database;
     data.datasetFramework = CreateDataMeanPoints(data);
+    data.maxsigma = MaxSigma(data.datasetFramework);
+
+    for (int i = 0; i < data.datasetFramework.size(); ++i)
+    {
+        if (data.datasetFramework[i].sigma == 0.) {
+            data.datasetFramework[i].sigma = data.maxsigma;
+        }
+    }
 
     return data;
 
@@ -217,13 +225,14 @@ std::vector<datasetPoint> CreateDataMeanPoints(dataSet database){
 
         std::vector<std::vector<float>> embgoodlabel;
         float variance = 0.;
+        float sigma = 0.;
 
         for (int i = 0; i < database.labels.size(); ++i)
         {
             
             if (database.labels[i] == label)
             {
-                embgoodlabel.push_back(database.embeddings[i]);
+                embgoodlabel.emplace_back(database.embeddings[i]);
             }
             
         }
@@ -235,17 +244,38 @@ std::vector<datasetPoint> CreateDataMeanPoints(dataSet database){
            variance += SquaredDistance(meanposition,embgoodlabel[i]);
         }
 
-        variance = sqrt(variance / embgoodlabel.size() /embgoodlabel.size() );
+        sigma = sqrt(variance / embgoodlabel.size());
 
         point.meanposition = meanposition;
         point.label = label;
-        point.dataradius = variance;
+        point.sigma = sigma;
 
-        std::cout << "point : " << label << " variance : " << variance <<std::endl;
-        std::cout << "meanpos size " << meanposition.size() << " vector size : " << database.embeddings[0].size() <<std::endl;
+        std::cout << "point : " << label << " sigma : " << sigma <<std::endl;
+        //std::cout << "meanpos size " << meanposition.size() << " vector size : " << database.embeddings[0].size() <<std::endl;
         points.push_back(point);
 
     }
+    std::cout << std::endl;
+
+    for (int i = 0; i < points.size(); ++i)
+    {
+        for (int j = i+1; j < points.size(); ++j)
+        {
+            std::cout << "Distance between : " << points[i].label << " and " << points[j].label << " is " << sqrt(SquaredDistance(points[i].meanposition, points[j].meanposition)) <<std::endl;
+        }
+    }
+
+    std::cout << std::endl;
+
     return points;
 
+}
+
+float MaxSigma (std::vector<datasetPoint> v){
+    float maxsigma = v[0].sigma ;
+    for (int i = 1; i < v.size(); ++i)
+    {
+       maxsigma= std::max(maxsigma, v[i].sigma);
+    }
+    return maxsigma;
 }

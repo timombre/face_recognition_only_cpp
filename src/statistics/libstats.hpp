@@ -29,6 +29,9 @@
 #include <string>
 #include <set>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 using namespace std;
 
 namespace filesys = std::experimental::filesystem;
@@ -37,7 +40,7 @@ struct datasetPoint
 {
 	std::string label;
 	std::vector<float> meanposition;
-	float dataradius;
+	float sigma;
 };
 
 
@@ -47,6 +50,7 @@ struct dataSet
 	std::vector<std::vector<float>> embeddings;
 	std::set<std::string> unique_labels;
 	std::vector<datasetPoint> datasetFramework;
+	float maxsigma;
 
 };
 
@@ -67,6 +71,8 @@ std::vector<float> vectmean(const std::vector<std::vector<float>>& input);
 std::vector<std::string> ReadLabelsAndEmbeddings(const std::string file_name);
 
 std::vector<float> ConvStringToFloats(std::string str);
+
+float MaxSigma (std::vector<datasetPoint> v);
 
 bool isFloat(string s);
 
