@@ -88,7 +88,8 @@ root folder
 
     ./face_recognition face_embeddings_database.txt
     # you can add the -show_crop flag if you want to display the analyzed sub pictures
-    # you can also tune the minimum display distance -thresh "float" (default is set at 0.045)
+    # you can also tune the minimum display distance -thresh "float" (default is set at 0.4) and relative probability threshold -rp "float" (default is 1.25)
+    # -mindist will give the original behaviour based on the minimum distance and not average and variance
 
     # In both cases, you can use the -choose_pb -choose_lm -choose_casc followed by the appropriate files to use your own pb, landmark and Haarcascade files.
 
@@ -102,7 +103,5 @@ With a split database, you can also somewhat evaluate your model
 
 
 ## WIP :
-
--Linear algebra investigation (Stop using the minimal distance with all points and create volumes in embedding space for each label, see if it's better)
 
 -Average the result on several consecutive frames
