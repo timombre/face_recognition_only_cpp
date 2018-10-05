@@ -33,7 +33,7 @@ int main( int argc, const char** argv )
     bool show_crop = false;
     bool volume_points = true;
     float thresh = 0.4;
-    float relative_probability = 1.4;
+    float relative_probability = 1.25;
     bool verbose =false;
 
     std::string pbfile = "20170512-110547.pb";
